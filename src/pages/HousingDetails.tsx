@@ -67,7 +67,7 @@ const HousingDetails = () => {
         </div>
       </div>
 
-      <Carousel loop className="w-full rounded-md md:h-[44rem]">
+      <Carousel loop className="w-full rounded-md md:h-[44rem]" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
         {house.images.map(pic =>
           <img key={pic} alt="" src={`${API_URL}${pic}`} className="h-full w-full object-cover" />
         )}
