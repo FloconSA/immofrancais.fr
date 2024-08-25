@@ -58,7 +58,7 @@ const Home = () => {
       {/* Houses */}
       {houses.length !== 0 &&
         <section className="max-w-4xl mx-auto flex flex-col gap-8 items-center" id="new">
-          <h2 className="text-3xl">Nos dernières nouveautées</h2>
+          <h2 className="text-3xl">Nos dernières nouveautés</h2>
           <div className="flex flex-col gap-8">
             {houses.map((house: any) => <House key={house.id} house={house} />)}
           </div>

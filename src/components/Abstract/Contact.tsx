@@ -47,7 +47,7 @@ const Contact = () => {
   return (
     <section className="mx-auto max-w-7xl py-16 px-4 sm:py-24 sm:px-6 lg:px-8" id="contact">
       <div className="relativet">
-        <h2 className="font-title text-3xl font-bold mb-4">Nous contacter</h2>
+        <h2 className="font-title text-3xl font-bold mb-4">Nous recrutons</h2>
         <div className="grid grid-cols-1 lg:grid-cols-3">
           {/* Contact information */}
           <div className="relative overflow-hidden bg-immo-blue py-10 px-6 sm:px-10 xl:p-12 rounded-2xl shadow-lg">
@@ -155,6 +155,15 @@ const Contact = () => {
               <dd className="flex">
                 <PhoneIcon className="h-6 w-6 flex-shrink-0 " aria-hidden="true" />
                 <div className="flex flex-col">
+                  <a href="tel:+33785581393" className="ml-3 hover:underline">(+33) 07 85 58 13 93</a>
+                </div>
+              </dd>
+              <dt>
+                <span className="sr-only">Phone number</span>
+              </dt>
+              <dd className="flex">
+                <PhoneIcon className="h-6 w-6 flex-shrink-0 " aria-hidden="true" />
+                <div className="flex flex-col">
                   <a href="tel:+33642233006" className="ml-3 hover:underline">(+33) 06 64 42 04 53</a>
                 </div>
               </dd>
@@ -163,7 +172,14 @@ const Contact = () => {
               </dt>
               <dd className="flex">
                 <EnvelopeIcon className="h-6 w-6 flex-shrink-0 " aria-hidden="true" />
-                <a href="mailto:contact@immofrancais.fr" className="ml-3 hover:underline">contact@immofrancais.fr</a>
+                <a href="mailto:jbrondel.if@gmail.com" className="ml-3 hover:underline">jbrondel.if@gmail.com</a>
+              </dd>
+              <dt>
+                <span className="sr-only">Email</span>
+              </dt>
+              <dd className="flex">
+                <EnvelopeIcon className="h-6 w-6 flex-shrink-0 " aria-hidden="true" />
+                <a href="mailto:fcarre.if@gmail.com" className="ml-3 hover:underline">fcarre.if@gmail.com</a>
               </dd>
               <dt>
                 <span className="sr-only">Adresse</span>
@@ -172,7 +188,7 @@ const Contact = () => {
                 <HomeIcon className="h-6 w-6 flex-shrink-0 " aria-hidden="true" />
                 <div className="ml-3 ">
                   <div>10 rue commandant Faurax</div>
-                  <div>69006 Lyon: Lyon</div>
+                  <div>69006 Lyon, France</div>
                 </div>
               </dd>
             </dl>
@@ -239,7 +255,7 @@ const Contact = () => {
                     Téléphone
                   </label>
                   <span id="phone-optional" className="text-sm text-gray-500">
-                    Optional
+                    Optionnel
                   </span>
                 </div>
                 <div className="mt-1">
@@ -283,7 +299,6 @@ const Contact = () => {
                     !formik.values.firstName ||
                     !formik.values.lastName ||
                     !formik.values.email ||
-                    !formik.values.enterprise ||
                     !formik.values.message
                   }
                   label="Envoyer"

@@ -32,7 +32,7 @@ const Housing = () => {
 
   return (
     <section className="max-w-4xl mx-auto flex flex-col gap-8 items-center" id="new">
-      <h2 className="text-3xl mt-8">Tous nos bien en vente</h2>
+      <h2 className="text-3xl mt-8">Tous nos biens en vente</h2>
       <div className="flex flex-col gap-8">
         {houses.map((house: any) => <House key={house.id} house={house} />)}
       </div>
