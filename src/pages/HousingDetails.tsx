@@ -9,7 +9,7 @@ import Loading from "../components/Loading"
 
 
 const HousingDetails = () => {
-  const [house, setHouse] = useState(null)
+  const [house, setHouse] = useState<any>(null)
   const { id } = useParams()
 
   const currency = new Intl.NumberFormat('fr-FR', {
@@ -20,28 +20,33 @@ const HousingDetails = () => {
 
   useEffect(() => {
     (async () => {
+      // On garde l'appel API tel quel
       const res = await fetch(`${API_URL}/api/houses/${id}?populate=*`)
 
       if (!res.ok)
         window.location.href = '/404'
 
       const data = await res.json()
-      const house = data.data
+      
+      // Adaptation pour Strapi v5 : on récupère l'objet direct
+      const houseData = data.data
 
       setHouse({
-        id: house.id,
-        name: house.attributes.name,
-        type: house.attributes.type,
-        price: house.attributes.price,
-        rooms: house.attributes.rooms,
-        bedrooms: house.attributes.bedrooms,
-        surface: house.attributes.surface,
-        description: house.attributes.description,
-        caracteristics: house.attributes.caracteristics.split('\n'),
-        facilities: house.attributes.facilities.split('\n'),
-        DPE: house.attributes.DPE,
-        GES: house.attributes.GES,
-        images: house.attributes.images.data.map((pic: any) => pic.attributes.url)
+        id: houseData.id,
+        name: houseData.name,
+        type: houseData.type,
+        price: houseData.price,
+        rooms: houseData.rooms,
+        bedrooms: houseData.bedrooms,
+        surface: houseData.surface,
+        description: houseData.description,
+        // Sécurité ajoutée : ( || "") évite le crash si le champ est vide
+        caracteristics: (houseData.caracteristics || "").split('\n'),
+        facilities: (houseData.facilities || "").split('\n'),
+        DPE: houseData.DPE,
+        GES: houseData.GES,
+        // Nouvelle gestion des images pour Strapi v5
+        images: houseData.images ? houseData.images.map((pic: any) => pic.url) : []
       })
     })()
   }, [id])
@@ -68,7 +73,7 @@ const HousingDetails = () => {
       </div>
 
       <Carousel loop className="w-full rounded-md md:h-[44rem]" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-        {house.images.map(pic =>
+        {house.images.map((pic: string) =>
           <img key={pic} alt="" src={`${API_URL}${pic}`} className="h-full w-full object-cover" />
         )}
       </Carousel>
@@ -82,15 +87,15 @@ const HousingDetails = () => {
         <div>
           <h2 className="font-bold mb-3">Caractéristiques générales</h2>
           <div className="text-gray-500 grid md:grid-cols-3 md:gap-3">
-            {house.caracteristics.map((e, idx) => <div key={idx}>{e}</div>)}
-            </div>
+            {house.caracteristics.map((e: string, idx: number) => <div key={idx}>{e}</div>)}
+          </div>
         </div>
 
         <div>
           <h2 className="font-bold mb-3">Aménagements du bien</h2>
           <div className="text-gray-500 grid md:grid-cols-3 md:gap-3">
-            {house.facilities.map((e, idx) => <div key={idx}>{e}</div>)}
-            </div>
+            {house.facilities.map((e: string, idx: number) => <div key={idx}>{e}</div>)}
+          </div>
         </div>
 
         <div>
