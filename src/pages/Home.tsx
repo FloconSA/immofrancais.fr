@@ -13,7 +13,7 @@ const Home = () => {
       const data = await res.json()
 
       const parsed = data.data.map((house: any) => ({
-  id: house.id,
+  id: house.documentId,
   name: house.name,
   type: house.type,
   price: house.price,
