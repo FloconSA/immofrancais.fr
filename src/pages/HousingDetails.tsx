@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { redirect, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { ShareIcon } from "@heroicons/react/24/outline"
 import { Carousel } from "@material-tailwind/react"
 
@@ -20,15 +20,16 @@ const HousingDetails = () => {
 
   useEffect(() => {
     (async () => {
-      // On garde l'appel API tel quel
+      // Strapi v5 cherchera par documentId grâce au changement fait dans Home.tsx
       const res = await fetch(`${API_URL}/api/houses/${id}?populate=*`)
 
-      if (!res.ok)
+      if (!res.ok) {
         window.location.href = '/404'
+        return
+      }
 
       const data = await res.json()
-      
-      // Adaptation pour Strapi v5 : on récupère l'objet direct
+      // ADAPTATION V5 : On prend directement data.data (plus de .attributes)
       const houseData = data.data
 
       setHouse({
@@ -40,12 +41,12 @@ const HousingDetails = () => {
         bedrooms: houseData.bedrooms,
         surface: houseData.surface,
         description: houseData.description,
-        // Sécurité ajoutée : ( || "") évite le crash si le champ est vide
+        // Sécurité pour éviter le crash sur les split
         caracteristics: (houseData.caracteristics || "").split('\n'),
         facilities: (houseData.facilities || "").split('\n'),
         DPE: houseData.DPE,
         GES: houseData.GES,
-        // Nouvelle gestion des images pour Strapi v5
+        // Gestion des images v5
         images: houseData.images ? houseData.images.map((pic: any) => pic.url) : []
       })
     })()
@@ -115,7 +116,6 @@ const HousingDetails = () => {
       </div>
     </div >
   )
-
 }
 
 export default HousingDetails
