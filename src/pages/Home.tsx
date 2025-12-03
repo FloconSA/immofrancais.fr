@@ -13,20 +13,21 @@ const Home = () => {
       const data = await res.json()
 
       const parsed = data.data.map((house: any) => ({
-        id: house.id,
-        name: house.name,
-        type: house.type,
-        price: house.price,
-        rooms: house.rooms,
-        bedrooms: house.bedrooms,
-        surface: house.surface,
-        description: house.description,
-        caracteristics: house.caracteristics.split('\n'),
-        facilities: house.facilities.split('\n'),
-        DPE: house.DPE,
-        GES: house.GES,
-        images: house.images.data.map((pic: any) => pic.attributes.url)
-      }))
+  id: house.id,
+  name: house.name,
+  type: house.type,
+  price: house.price,
+  rooms: house.rooms,
+  bedrooms: house.bedrooms,
+  surface: house.surface,
+  description: house.description,
+  caracteristics: (house.caracteristics || "").split('\n'),
+  facilities: (house.facilities || "").split('\n'),
+  DPE: house.DPE,
+  GES: house.GES,
+  // C'est ici que ça change pour les images v5 :
+  images: house.images ? house.images.map((pic: any) => pic.url) : []
+}))
 
       setHouses(parsed.slice(0, 3))
     })()
