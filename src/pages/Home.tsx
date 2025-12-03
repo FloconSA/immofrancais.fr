@@ -14,18 +14,18 @@ const Home = () => {
 
       const parsed = data.data.map((house: any) => ({
         id: house.id,
-        name: house.attributes.name,
-        type: house.attributes.type,
-        price: house.attributes.price,
-        rooms: house.attributes.rooms,
-        bedrooms: house.attributes.bedrooms,
-        surface: house.attributes.surface,
-        description: house.attributes.description,
-        caracteristics: house.attributes.caracteristics.split('\n'),
-        facilities: house.attributes.facilities.split('\n'),
-        DPE: house.attributes.DPE,
-        GES: house.attributes.GES,
-        images: house.attributes.images.data.map((pic: any) => pic.attributes.url)
+        name: house.name,
+        type: house.type,
+        price: house.price,
+        rooms: house.rooms,
+        bedrooms: house.bedrooms,
+        surface: house.surface,
+        description: house.description,
+        caracteristics: house.caracteristics.split('\n'),
+        facilities: house.facilities.split('\n'),
+        DPE: house.DPE,
+        GES: house.GES,
+        images: house.images.data.map((pic: any) => pic.attributes.url)
       }))
 
       setHouses(parsed.slice(0, 3))
