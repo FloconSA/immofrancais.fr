@@ -57,25 +57,26 @@ const HousingDetails = () => {
   return (
     <div className="max-w-6xl mx-auto flex flex-col gap-6 relative">
 
-      {/* --- MODALE DE ZOOM --- */}
+      {/* --- MODALE DE ZOOM AMÉLIORÉE --- */}
       {selectedImage && (
         <div 
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 p-4 cursor-pointer"
+          // MODIFICATION ICI : Fond moins noir (60%) et ajout d'un flou (backdrop-blur-md) pour l'esthétique
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 cursor-pointer transition-all duration-300"
           onClick={closeZoom} // Ferme si on clique sur le fond
         >
-          {/* Bouton Fermer (Croix) */}
+          {/* Bouton Fermer (Croix) avec une petite ombre pour ressortir */}
           <button 
             onClick={closeZoom}
-            className="absolute top-5 right-5 z-50 text-white hover:text-gray-300 transition"
+            className="absolute top-5 right-5 z-50 text-white/80 hover:text-white transition"
           >
             <XMarkIcon className="h-10 w-10 drop-shadow-lg" />
           </button>
 
-          {/* L'image en grand */}
+          {/* L'image en grand avec une ombre douce */}
           <img 
             src={`${API_URL}${selectedImage}`} 
             alt="Agrandissement" 
-            className="max-h-[90vh] max-w-[90vw] object-contain rounded-md shadow-2xl cursor-default"
+            className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg shadow-2xl cursor-default"
             onClick={(e) => e.stopPropagation()} // Empêche de fermer si on clique sur l'image
           />
         </div>
@@ -97,33 +98,27 @@ const HousingDetails = () => {
         </div>
       </div>
 
-      {/* --- CARROUSEL --- */}
-      <div className="relative z-0"> {/* On s'assure que le carrousel reste derrière la modale */}
+      {/* --- CARROUSEL NETTOYÉ --- */}
+      <div className="relative z-0">
         <Carousel 
           loop 
           className="w-full rounded-md md:h-[44rem]"
-          // Les 3 props suivantes sont importantes pour éviter les erreurs :
           placeholder={undefined} 
           onPointerEnterCapture={undefined} 
           onPointerLeaveCapture={undefined}
-          // --- CORRECTION PRINCIPALE ---
-          // Si le zoom est activé, on cache les flèches et les points de navigation
+          // On cache la navigation si le zoom est actif
           prevArrow={selectedImage ? () => null : undefined}
           nextArrow={selectedImage ? () => null : undefined}
           navigation={selectedImage ? () => null : undefined}
-          // -----------------------------
         >
           {house.images.map((pic: string) =>
             <div 
               key={pic} 
-              className="h-full w-full cursor-pointer hover:opacity-95 transition relative group"
-              // On ouvre le zoom au clic
+              // MODIFICATION ICI : On garde juste cursor-pointer. On a enlevé 'group', 'hover:opacity' et 'relative'.
+              className="h-full w-full cursor-pointer"
               onClick={() => setSelectedImage(pic)}
             >
-              {/* Petit message "Agrandir" au survol */}
-              <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="text-white font-semibold bg-black/50 px-3 py-1 rounded-full backdrop-blur-sm">Agrandir</span>
-              </div>
+              {/* MODIFICATION ICI : J'ai supprimé tout le bloc <div> qui contenait le texte "Agrandir" */}
 
               <img 
                 alt="" 
@@ -136,7 +131,7 @@ const HousingDetails = () => {
       </div>
 
       <div className="max-w-5xl mx-auto flex flex-col gap-6 md:mt-8">
-        {/* ... Reste de la page (description, etc.) ... */}
+        {/* ... Le reste de la page ne change pas ... */}
         <div>
           <h2 className="font-bold mb-3">Description</h2>
           <p className="text-gray-500 text-justify whitespace-pre-line">{house.description}</p>
