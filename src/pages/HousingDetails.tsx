@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import { ShareIcon, XMarkIcon } from "@heroicons/react/24/outline" // J'ai ajouté l'icône de croix
+import { ShareIcon, XMarkIcon } from "@heroicons/react/24/outline"
 import { Carousel } from "@material-tailwind/react"
 
 import { DPE, GES } from "../components/Abstract/DPE-GES"
@@ -9,10 +9,8 @@ import Loading from "../components/Loading"
 
 const HousingDetails = () => {
   const [house, setHouse] = useState<any>(null)
-  
-  // NOUVEAU : Une mémoire pour savoir quelle image est ouverte en grand
+  // Mémoire pour savoir si le zoom est actif
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
-  
   const { id } = useParams()
 
   const currency = new Intl.NumberFormat('fr-FR', {
@@ -53,33 +51,36 @@ const HousingDetails = () => {
   if (!house)
     return <Loading />
 
+  // Fonction pour fermer le zoom proprement
+  const closeZoom = () => setSelectedImage(null);
+
   return (
     <div className="max-w-6xl mx-auto flex flex-col gap-6 relative">
 
-      {/* --- NOUVEAU : LA MODALE (Zomm plein écran) --- */}
+      {/* --- MODALE DE ZOOM --- */}
       {selectedImage && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
-          onClick={() => setSelectedImage(null)} // Ferme si on clique sur le fond noir
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 p-4 cursor-pointer"
+          onClick={closeZoom} // Ferme si on clique sur le fond
         >
-          {/* Bouton Fermer */}
+          {/* Bouton Fermer (Croix) */}
           <button 
-            onClick={() => setSelectedImage(null)}
-            className="absolute top-5 right-5 text-white hover:text-gray-300 transition"
+            onClick={closeZoom}
+            className="absolute top-5 right-5 z-50 text-white hover:text-gray-300 transition"
           >
-            <XMarkIcon className="h-10 w-10" />
+            <XMarkIcon className="h-10 w-10 drop-shadow-lg" />
           </button>
 
           {/* L'image en grand */}
           <img 
             src={`${API_URL}${selectedImage}`} 
             alt="Agrandissement" 
-            className="max-h-full max-w-full object-contain rounded-md shadow-2xl"
-            onClick={(e) => e.stopPropagation()} // Empêche de fermer si on clique sur l'image elle-même
+            className="max-h-[90vh] max-w-[90vw] object-contain rounded-md shadow-2xl cursor-default"
+            onClick={(e) => e.stopPropagation()} // Empêche de fermer si on clique sur l'image
           />
         </div>
       )}
-      {/* --------------------------------------------- */}
+      {/* ----------------------- */}
 
       <div>
         <div className="flex justify-between font-bold">
@@ -96,20 +97,46 @@ const HousingDetails = () => {
         </div>
       </div>
 
-      <Carousel loop className="w-full rounded-md md:h-[44rem]" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-        {house.images.map((pic: string) =>
-          <img 
-            key={pic} 
-            alt="" 
-            src={`${API_URL}${pic}`} 
-            // NOUVEAU : On ajoute le clic pour ouvrir l'image + le curseur main
-            onClick={() => setSelectedImage(pic)}
-            className="h-full w-full object-cover cursor-pointer hover:opacity-95 transition" 
-          />
-        )}
-      </Carousel>
+      {/* --- CARROUSEL --- */}
+      <div className="relative z-0"> {/* On s'assure que le carrousel reste derrière la modale */}
+        <Carousel 
+          loop 
+          className="w-full rounded-md md:h-[44rem]"
+          // Les 3 props suivantes sont importantes pour éviter les erreurs :
+          placeholder={undefined} 
+          onPointerEnterCapture={undefined} 
+          onPointerLeaveCapture={undefined}
+          // --- CORRECTION PRINCIPALE ---
+          // Si le zoom est activé, on cache les flèches et les points de navigation
+          prevArrow={selectedImage ? () => null : undefined}
+          nextArrow={selectedImage ? () => null : undefined}
+          navigation={selectedImage ? () => null : undefined}
+          // -----------------------------
+        >
+          {house.images.map((pic: string) =>
+            <div 
+              key={pic} 
+              className="h-full w-full cursor-pointer hover:opacity-95 transition relative group"
+              // On ouvre le zoom au clic
+              onClick={() => setSelectedImage(pic)}
+            >
+              {/* Petit message "Agrandir" au survol */}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-white font-semibold bg-black/50 px-3 py-1 rounded-full backdrop-blur-sm">Agrandir</span>
+              </div>
+
+              <img 
+                alt="" 
+                src={`${API_URL}${pic}`} 
+                className="h-full w-full object-cover" 
+              />
+            </div>
+          )}
+        </Carousel>
+      </div>
 
       <div className="max-w-5xl mx-auto flex flex-col gap-6 md:mt-8">
+        {/* ... Reste de la page (description, etc.) ... */}
         <div>
           <h2 className="font-bold mb-3">Description</h2>
           <p className="text-gray-500 text-justify whitespace-pre-line">{house.description}</p>
@@ -142,7 +169,6 @@ const HousingDetails = () => {
             </div>
           </div>
         </div>
-
       </div>
     </div >
   )
