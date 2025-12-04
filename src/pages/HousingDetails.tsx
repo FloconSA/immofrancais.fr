@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useParams } from "react-router-dom"
-import { ShareIcon, XMarkIcon } from "@heroicons/react/24/outline"
+import { ShareIcon, XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline"
 import { Carousel } from "@material-tailwind/react"
 
 import { DPE, GES } from "../components/Abstract/DPE-GES"
@@ -9,7 +9,7 @@ import Loading from "../components/Loading"
 
 const HousingDetails = () => {
   const [house, setHouse] = useState<any>(null)
-  // Mémoire pour savoir si le zoom est actif
+  // Mémoire pour savoir si le zoom est actif (contient l'URL de l'image)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const { id } = useParams()
 
@@ -48,40 +48,89 @@ const HousingDetails = () => {
     })()
   }, [id])
 
+  // --- LOGIQUE DE NAVIGATION DU ZOOM ---
+  
+  // Fonction pour changer d'image (direction : -1 pour précédent, +1 pour suivant)
+  const navigateImage = useCallback((direction: number) => {
+    if (!house || !selectedImage) return;
+    
+    const currentIndex = house.images.indexOf(selectedImage);
+    const totalImages = house.images.length;
+    
+    // Calcul savant pour gérer la boucle (si on est au début et qu'on recule, on va à la fin)
+    let newIndex = (currentIndex + direction) % totalImages;
+    if (newIndex < 0) newIndex = totalImages - 1;
+    
+    setSelectedImage(house.images[newIndex]);
+  }, [house, selectedImage]);
+
+  // Gestion des touches du clavier (Flèche Gauche / Droite / Echap)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!selectedImage) return;
+      
+      if (e.key === 'ArrowRight') navigateImage(1);
+      if (e.key === 'ArrowLeft') navigateImage(-1);
+      if (e.key === 'Escape') setSelectedImage(null);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedImage, navigateImage]);
+
   if (!house)
     return <Loading />
 
-  // Fonction pour fermer le zoom proprement
   const closeZoom = () => setSelectedImage(null);
 
   return (
     <div className="max-w-6xl mx-auto flex flex-col gap-6 relative">
 
-      {/* --- MODALE DE ZOOM AMÉLIORÉE --- */}
+      {/* --- MODALE DE ZOOM (GALERIE) --- */}
       {selectedImage && (
         <div 
-          // MODIFICATION ICI : Fond moins noir (60%) et ajout d'un flou (backdrop-blur-md) pour l'esthétique
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 cursor-pointer transition-all duration-300"
-          onClick={closeZoom} // Ferme si on clique sur le fond
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md transition-all duration-300"
+          onClick={closeZoom} // Clique sur le fond = Fermer
         >
-          {/* Bouton Fermer (Croix) avec une petite ombre pour ressortir */}
+          {/* BOUTON PRÉCÉDENT (Gauche) */}
           <button 
-            onClick={closeZoom}
-            className="absolute top-5 right-5 z-50 text-white/80 hover:text-white transition"
+            onClick={(e) => { e.stopPropagation(); navigateImage(-1); }}
+            className="absolute left-4 z-50 p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition"
           >
-            <XMarkIcon className="h-10 w-10 drop-shadow-lg" />
+            <ChevronLeftIcon className="h-10 w-10 md:h-12 md:w-12 drop-shadow-lg" />
           </button>
 
-          {/* L'image en grand avec une ombre douce */}
+          {/* BOUTON SUIVANT (Droite) */}
+          <button 
+            onClick={(e) => { e.stopPropagation(); navigateImage(1); }}
+            className="absolute right-4 z-50 p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition"
+          >
+            <ChevronRightIcon className="h-10 w-10 md:h-12 md:w-12 drop-shadow-lg" />
+          </button>
+
+          {/* BOUTON FERMER (Croix en haut à droite) */}
+          <button 
+            onClick={closeZoom}
+            className="absolute top-5 right-5 z-50 text-white/70 hover:text-white transition"
+          >
+            <XMarkIcon className="h-8 w-8 drop-shadow-lg" />
+          </button>
+
+          {/* L'IMAGE EN GRAND */}
           <img 
             src={`${API_URL}${selectedImage}`} 
-            alt="Agrandissement" 
-            className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg shadow-2xl cursor-default"
-            onClick={(e) => e.stopPropagation()} // Empêche de fermer si on clique sur l'image
+            alt="Zoom" 
+            className="max-h-[85vh] max-w-[85vw] object-contain rounded-lg shadow-2xl animate-fade-in cursor-default select-none"
+            onClick={(e) => e.stopPropagation()} // Clic sur l'image ne ferme pas
           />
+          
+          {/* Compteur d'images (ex: 1 / 5) en bas */}
+          <div className="absolute bottom-5 text-white/80 font-medium tracking-widest text-sm bg-black/40 px-3 py-1 rounded-full backdrop-blur-sm">
+             {house.images.indexOf(selectedImage) + 1} / {house.images.length}
+          </div>
         </div>
       )}
-      {/* ----------------------- */}
+      {/* ------------------------------- */}
 
       <div>
         <div className="flex justify-between font-bold">
@@ -98,7 +147,6 @@ const HousingDetails = () => {
         </div>
       </div>
 
-      {/* --- CARROUSEL NETTOYÉ --- */}
       <div className="relative z-0">
         <Carousel 
           loop 
@@ -106,7 +154,7 @@ const HousingDetails = () => {
           placeholder={undefined} 
           onPointerEnterCapture={undefined} 
           onPointerLeaveCapture={undefined}
-          // On cache la navigation si le zoom est actif
+          // On désactive la navigation du carrousel si le zoom est ouvert
           prevArrow={selectedImage ? () => null : undefined}
           nextArrow={selectedImage ? () => null : undefined}
           navigation={selectedImage ? () => null : undefined}
@@ -114,12 +162,9 @@ const HousingDetails = () => {
           {house.images.map((pic: string) =>
             <div 
               key={pic} 
-              // MODIFICATION ICI : On garde juste cursor-pointer. On a enlevé 'group', 'hover:opacity' et 'relative'.
               className="h-full w-full cursor-pointer"
               onClick={() => setSelectedImage(pic)}
             >
-              {/* MODIFICATION ICI : J'ai supprimé tout le bloc <div> qui contenait le texte "Agrandir" */}
-
               <img 
                 alt="" 
                 src={`${API_URL}${pic}`} 
@@ -131,7 +176,6 @@ const HousingDetails = () => {
       </div>
 
       <div className="max-w-5xl mx-auto flex flex-col gap-6 md:mt-8">
-        {/* ... Le reste de la page ne change pas ... */}
         <div>
           <h2 className="font-bold mb-3">Description</h2>
           <p className="text-gray-500 text-justify whitespace-pre-line">{house.description}</p>
