@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import { PhoneIcon, EnvelopeIcon, MapPinIcon } from "@heroicons/react/24/outline"
 import Loading from "../components/Loading"
 import { API_URL } from "../constants"
 
@@ -81,17 +82,13 @@ const Home = () => {
         {/* Partie Gauche (Texte + Logo) */}
         <div className="flex flex-col items-start gap-4 md:w-1/2">
           
-          {/* MODIFICATION 1 : VOTRE LOGO */}
-          {/* Assurez-vous de mettre votre image 'logo.png' dans le dossier 'public' */}
+          {/* LOGO */}
           <div className="mb-2">
             <img 
               src="/logo.png" 
               alt="Logo ImmoFrançais" 
-              className="h-20 w-auto object-contain" // Ajustez h-20 selon la taille voulue
-              onError={(e) => {
-                // Si le logo n'est pas trouvé, on cache l'image pour éviter l'icône cassée
-                e.currentTarget.style.display = 'none';
-              }}
+              className="h-20 w-auto object-contain" 
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
           </div>
 
@@ -109,7 +106,6 @@ const Home = () => {
         
         {/* Partie Droite (Image Haussmannienne) */}
         <div className="md:w-1/2 w-full h-80 md:h-[500px] overflow-hidden rounded-2xl shadow-2xl relative">
-             {/* MODIFICATION 2 : IMMEUBLE HAUSSMANNIEN */}
              <img 
                src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
                className="w-full h-full object-cover transform hover:scale-105 transition duration-700"
@@ -134,19 +130,17 @@ const Home = () => {
         </div>
       </div>
 
-      {/* SECTION 3 : LISTE DES BIENS (CENTRÉE) */}
-      <div className="max-w-6xl mx-auto w-full px-4 mb-20 relative z-10">
+      {/* SECTION 3 : LISTE DES BIENS */}
+      <div className="max-w-6xl mx-auto w-full px-4 relative z-10">
         <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">
           Nos <span className="text-blue-500">dernières nouveautés</span>
         </h2>
 
-        {/* MODIFICATION 3 : CENTRAGE PARFAIT (Flexbox au lieu de Grid) */}
         <div className="flex flex-wrap justify-center gap-8">
           {houses.map((house: any) => (
             <Link 
               key={house.id} 
               to={`/housing/${house.id}`} 
-              // On force une largeur fixe (w-full sur mobile, w-96 sur ordi) pour que ça fasse de belles cartes
               className="w-full md:w-96 group bg-white rounded-xl shadow-lg hover:shadow-2xl transition overflow-hidden border border-gray-100 flex flex-col"
             >
               <div className="h-64 overflow-hidden relative">
@@ -198,10 +192,88 @@ const Home = () => {
           </div>
         )}
         
-        <div className="text-center mt-12">
+        <div className="text-center mt-12 mb-20">
            <Link to="/housing" className="inline-block border-2 border-blue-500 text-blue-500 px-8 py-3 rounded-full font-bold hover:bg-blue-500 hover:text-white transition">
              Voir tous nos biens
            </Link>
+        </div>
+      </div>
+
+      {/* SECTION 4 : CONTACT / NOUS RECRUTONS (Restaurée) */}
+      {/* J'ai ajouté id="recrutement" pour que le menu puisse pointer ici si besoin */}
+      <div id="recrutement" className="max-w-6xl mx-auto w-full px-4 mb-20 relative z-10 scroll-mt-24">
+        <h2 className="text-3xl font-bold mb-10 text-gray-800">Nous <span className="text-blue-500">recrutons</span></h2>
+        
+        <div className="flex flex-col md:flex-row gap-8 bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+          
+          {/* Bloc Bleu Informations */}
+          <div className="bg-blue-400 p-8 md:w-1/3 text-white flex flex-col justify-between">
+            <div>
+              <h3 className="text-xl font-bold mb-6">Informations de contact</h3>
+              <div className="flex flex-col gap-6">
+                <div className="flex items-start gap-4">
+                  <PhoneIcon className="h-6 w-6 mt-1 opacity-80" />
+                  <div className="flex flex-col">
+                    <span>(+33) 07 85 58 13 93</span>
+                    <span>(+33) 06 64 42 04 53</span>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <EnvelopeIcon className="h-6 w-6 mt-1 opacity-80" />
+                  <div className="flex flex-col text-sm">
+                    <a href="mailto:jbrondel.if@gmail.com" className="hover:underline">jbrondel.if@gmail.com</a>
+                    <a href="mailto:fcarre.if@gmail.com" className="hover:underline">fcarre.if@gmail.com</a>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <MapPinIcon className="h-6 w-6 mt-1 opacity-80" />
+                  <span>10 rue commandant Faurax<br/>69006 Lyon, France</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Formulaire */}
+          <div className="p-8 md:w-2/3">
+            <h3 className="text-xl font-bold mb-2 text-gray-800">Envoyez nous un message</h3>
+            <p className="text-gray-400 mb-6 text-sm">Pour postuler ou pour toute autre demande.</p>
+            
+            <form className="flex flex-col gap-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm font-semibold text-gray-600">Prénom</label>
+                  <input type="text" className="border rounded-md p-2 focus:ring-2 focus:ring-blue-400 outline-none transition" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm font-semibold text-gray-600">Nom</label>
+                  <input type="text" className="border rounded-md p-2 focus:ring-2 focus:ring-blue-400 outline-none transition" />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm font-semibold text-gray-600">Email</label>
+                  <input type="email" className="border rounded-md p-2 focus:ring-2 focus:ring-blue-400 outline-none transition" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm font-semibold text-gray-600">Téléphone <span className="text-gray-400 font-normal">(Optionnel)</span></label>
+                  <input type="tel" className="border rounded-md p-2 focus:ring-2 focus:ring-blue-400 outline-none transition" />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-semibold text-gray-600">Message</label>
+                <textarea rows={4} className="border rounded-md p-2 focus:ring-2 focus:ring-blue-400 outline-none transition"></textarea>
+              </div>
+
+              <div className="flex justify-end mt-2">
+                <button type="button" className="bg-blue-400 text-white px-8 py-2 rounded-full font-bold hover:bg-blue-500 transition shadow-md">
+                  Envoyer
+                </button>
+              </div>
+            </form>
+          </div>
+
         </div>
       </div>
 
