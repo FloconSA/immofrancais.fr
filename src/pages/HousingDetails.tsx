@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import { ShareIcon } from "@heroicons/react/24/outline"
+import { ShareIcon, XMarkIcon } from "@heroicons/react/24/outline" // J'ai ajouté l'icône de croix
 import { Carousel } from "@material-tailwind/react"
 
 import { DPE, GES } from "../components/Abstract/DPE-GES"
 import { API_URL } from "../constants"
 import Loading from "../components/Loading"
 
-
 const HousingDetails = () => {
   const [house, setHouse] = useState<any>(null)
+  
+  // NOUVEAU : Une mémoire pour savoir quelle image est ouverte en grand
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  
   const { id } = useParams()
 
   const currency = new Intl.NumberFormat('fr-FR', {
@@ -17,10 +20,8 @@ const HousingDetails = () => {
     currency: 'EUR',
   })
 
-
   useEffect(() => {
     (async () => {
-      // Strapi v5 cherchera par documentId grâce au changement fait dans Home.tsx
       const res = await fetch(`${API_URL}/api/houses/${id}?populate=*`)
 
       if (!res.ok) {
@@ -29,7 +30,6 @@ const HousingDetails = () => {
       }
 
       const data = await res.json()
-      // ADAPTATION V5 : On prend directement data.data (plus de .attributes)
       const houseData = data.data
 
       setHouse({
@@ -41,12 +41,10 @@ const HousingDetails = () => {
         bedrooms: houseData.bedrooms,
         surface: houseData.surface,
         description: houseData.description,
-        // Sécurité pour éviter le crash sur les split
         caracteristics: (houseData.caracteristics || "").split('\n'),
         facilities: (houseData.facilities || "").split('\n'),
         DPE: houseData.DPE,
         GES: houseData.GES,
-        // Gestion des images v5
         images: houseData.images ? houseData.images.map((pic: any) => pic.url) : []
       })
     })()
@@ -56,7 +54,32 @@ const HousingDetails = () => {
     return <Loading />
 
   return (
-    <div className="max-w-6xl mx-auto flex flex-col gap-6">
+    <div className="max-w-6xl mx-auto flex flex-col gap-6 relative">
+
+      {/* --- NOUVEAU : LA MODALE (Zomm plein écran) --- */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+          onClick={() => setSelectedImage(null)} // Ferme si on clique sur le fond noir
+        >
+          {/* Bouton Fermer */}
+          <button 
+            onClick={() => setSelectedImage(null)}
+            className="absolute top-5 right-5 text-white hover:text-gray-300 transition"
+          >
+            <XMarkIcon className="h-10 w-10" />
+          </button>
+
+          {/* L'image en grand */}
+          <img 
+            src={`${API_URL}${selectedImage}`} 
+            alt="Agrandissement" 
+            className="max-h-full max-w-full object-contain rounded-md shadow-2xl"
+            onClick={(e) => e.stopPropagation()} // Empêche de fermer si on clique sur l'image elle-même
+          />
+        </div>
+      )}
+      {/* --------------------------------------------- */}
 
       <div>
         <div className="flex justify-between font-bold">
@@ -75,7 +98,14 @@ const HousingDetails = () => {
 
       <Carousel loop className="w-full rounded-md md:h-[44rem]" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
         {house.images.map((pic: string) =>
-          <img key={pic} alt="" src={`${API_URL}${pic}`} className="h-full w-full object-cover" />
+          <img 
+            key={pic} 
+            alt="" 
+            src={`${API_URL}${pic}`} 
+            // NOUVEAU : On ajoute le clic pour ouvrir l'image + le curseur main
+            onClick={() => setSelectedImage(pic)}
+            className="h-full w-full object-cover cursor-pointer hover:opacity-95 transition" 
+          />
         )}
       </Carousel>
 
