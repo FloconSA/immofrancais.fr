@@ -13,21 +13,21 @@ const Home = () => {
       const data = await res.json()
 
       const parsed = data.data.map((house: any) => ({
-  id: house.documentId,
-  name: house.name,
-  type: house.type,
-  price: house.price,
-  rooms: house.rooms,
-  bedrooms: house.bedrooms,
-  surface: house.surface,
-  description: house.description,
-  caracteristics: (house.caracteristics || "").split('\n'),
-  facilities: (house.facilities || "").split('\n'),
-  DPE: house.DPE,
-  GES: house.GES,
-  // C'est ici que ça change pour les images v5 :
-  images: house.images ? house.images.map((pic: any) => pic.url) : []
-}))
+        id: house.documentId,
+        name: house.name,
+        type: house.type,
+        price: house.price,
+        rooms: house.rooms,
+        bedrooms: house.bedrooms,
+        surface: house.surface,
+        description: house.description,
+        caracteristics: (house.caracteristics || "").split('\n'),
+        facilities: (house.facilities || "").split('\n'),
+        DPE: house.DPE,
+        GES: house.GES,
+        // C'est ici que ça change pour les images v5 :
+        images: house.images ? house.images.map((pic: any) => pic.url) : []
+      }))
 
       setHouses(parsed.slice(0, 3))
     })()
@@ -36,7 +36,7 @@ const Home = () => {
   return (
     <div className="max-w-7xl mx-auto">
 
-      {/* Hero */}
+      {/* Hero (Code Original Intouché) */}
       <section className="grid grid-cols-1 md:grid-cols-2" id="#">
         <div className="flex flex-col items-center justify-center">
           <div className="grid grid-cols-1 gap-3 my-24 md:my-0">
@@ -56,7 +56,34 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Houses */}
+      {/* --- NOUVEAU : BANDEAU GLASSMORPHISM (TECH & MODERNE) --- */}
+      {/* Une section avec une image de fond et une carte effet "verre dépoli" par-dessus */}
+      <div className="relative w-full h-80 my-12 md:mb-24 rounded-xl overflow-hidden flex items-center justify-center mx-auto px-4">
+        
+        {/* 1. L'Image de fond (Architecture moderne) */}
+        <div 
+          className="absolute inset-0 z-0"
+          style={{ 
+            backgroundImage: "url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')",
+            backgroundPosition: 'center', 
+            backgroundSize: 'cover'
+          }}
+        />
+
+        {/* 2. L'effet Verre (Glassmorphism) */}
+        {/* backdrop-blur-md crée le flou, bg-white/10 crée la transparence vitrée */}
+        <div className="relative z-10 bg-white/10 backdrop-blur-md border border-white/20 p-8 md:p-10 rounded-2xl shadow-2xl max-w-3xl text-center mx-4">
+          <h3 className="text-2xl md:text-3xl font-bold text-white mb-3 drop-shadow-md">
+            L'Alliance de la Technologie et du Patrimoine
+          </h3>
+          <p className="text-white/90 text-lg font-light leading-relaxed">
+            Une approche moderne de l'immobilier, transparente et efficace, au service de vos projets de vie.
+          </p>
+        </div>
+      </div>
+      {/* -------------------------------------------------------- */}
+
+      {/* Houses (Code Original Intouché) */}
       {houses.length !== 0 &&
         <section className="max-w-4xl mx-auto flex flex-col gap-8 items-center" id="new">
           <h2 className="text-3xl">Nos dernières nouveautés</h2>
@@ -69,8 +96,8 @@ const Home = () => {
         </section>}
 
 
-    {/* Contact */}
-    <Contact />
+      {/* Contact (Code Original Intouché) */}
+      <Contact />
 
     </div>
   )
