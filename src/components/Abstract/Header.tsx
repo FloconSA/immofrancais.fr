@@ -36,8 +36,16 @@ const Header = () => {
           </div>
           <div className="hidden lg:flex lg:gap-x-12">
             {navigation.map((item) => (
-              // MODIFICATION ICI : text-lg (plus grand) et font-bold (plus gras)
-              <a key={item.name} href={item.href} className="text-lg font-bold leading-6 text-gray-900 hover:underline transition">
+              // --- MODIFICATION LUXE ICI ---
+              // uppercase : Tout en majuscule
+              // tracking-widest : Espace entre les lettres (Effet premium)
+              // font-bold : Gras pour la lisibilité
+              // text-sm : Taille maîtrisée pour l'élégance
+              <a 
+                key={item.name} 
+                href={item.href} 
+                className="text-sm font-bold uppercase tracking-widest text-gray-900 hover:text-blue-500 transition border-b-2 border-transparent hover:border-blue-500 pb-1"
+              >
                 {item.name}
               </a>
             ))}
@@ -71,7 +79,7 @@ const Header = () => {
                     <a
                       key={item.name}
                       href={item.href}
-                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-bold uppercase tracking-widest text-gray-900 hover:bg-gray-50"
                     >
                       {item.name}
                     </a>
