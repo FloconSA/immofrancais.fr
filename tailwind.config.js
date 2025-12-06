@@ -4,10 +4,18 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
     "./**/@material-tailwind/**/*.{html,js,ts,jsx,tsx,mdx}"
-
   ],
   theme: {
     extend: {
+      // --- AJOUT DES POLICES LUXE ICI ---
+      fontFamily: {
+        // Pour le texte courant (Moderne, lisible)
+        sans: ['"Lato"', 'sans-serif'],
+        // Pour les titres (Élégant, style magazine)
+        serif: ['"Playfair Display"', 'serif'],
+      },
+      // ----------------------------------
+      
       colors: {
         "immo-blue": {
           DEFAULT: "#7DC8FB"
