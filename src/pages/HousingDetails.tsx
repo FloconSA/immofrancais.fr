@@ -20,34 +20,38 @@ const HousingDetails = () => {
 
   useEffect(() => {
     (async () => {
-      const res = await fetch(`${API_URL}/api/houses/${id}?populate=*`)
+      try {
+        const res = await fetch(`${API_URL}/api/houses/${id}?populate=*`)
 
-      if (!res.ok) {
-        window.location.href = '/404'
-        return
+        if (!res.ok) {
+          window.location.href = '/404'
+          return
+        }
+
+        const data = await res.json()
+        const houseData = data.data
+
+        setHouse({
+          id: houseData.id,
+          name: houseData.name,
+          type: houseData.type,
+          price: houseData.price,
+          rooms: houseData.rooms,
+          bedrooms: houseData.bedrooms,
+          surface: houseData.surface,
+          description: houseData.description,
+          caracteristics: (houseData.caracteristics || "").split('\n'),
+          facilities: (houseData.facilities || "").split('\n'),
+          DPE: houseData.DPE,
+          GES: houseData.GES,
+          // --- LIGNE SÉCURISÉE ---
+          // On cherche la 'large', sinon la 'medium', sinon l'originale (pic.url) pour éviter le crash
+          images: houseData.images ? houseData.images.map((pic: any) => pic.formats?.large?.url || pic.formats?.medium?.url || pic.url) : []
+          // -----------------------
+        })
+      } catch (e) {
+        console.error(e)
       }
-
-      const data = await res.json()
-      const houseData = data.data
-
-      setHouse({
-        id: houseData.id,
-        name: houseData.name,
-        type: houseData.type,
-        price: houseData.price,
-        rooms: houseData.rooms,
-        bedrooms: houseData.bedrooms,
-        surface: houseData.surface,
-        description: houseData.description,
-        caracteristics: (houseData.caracteristics || "").split('\n'),
-        facilities: (houseData.facilities || "").split('\n'),
-        DPE: houseData.DPE,
-        GES: houseData.GES,
-images: house.images ? house.images.map((pic: any) => 
-  pic.formats?.large?.url || pic.formats?.medium?.url || pic.url
-) : []
-// ...
-      })
     })()
   }, [id])
 
@@ -60,7 +64,7 @@ images: house.images ? house.images.map((pic: any) =>
     const currentIndex = house.images.indexOf(selectedImage);
     const totalImages = house.images.length;
     
-    // Calcul savant pour gérer la boucle (si on est au début et qu'on recule, on va à la fin)
+    // Calcul pour gérer la boucle (si on est au début et qu'on recule, on va à la fin)
     let newIndex = (currentIndex + direction) % totalImages;
     if (newIndex < 0) newIndex = totalImages - 1;
     
