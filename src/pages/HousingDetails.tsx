@@ -43,7 +43,10 @@ const HousingDetails = () => {
         facilities: (houseData.facilities || "").split('\n'),
         DPE: houseData.DPE,
         GES: houseData.GES,
-        images: houseData.images ? houseData.images.map((pic: any) => pic.url) : []
+images: house.images ? house.images.map((pic: any) => 
+  pic.formats?.large?.url || pic.formats?.medium?.url || pic.url
+) : []
+// ...
       })
     })()
   }, [id])
