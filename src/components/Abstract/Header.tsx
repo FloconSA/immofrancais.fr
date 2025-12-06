@@ -39,18 +39,14 @@ const Header = () => {
             </button>
           </div>
 
-          {/* MENU ORDINATEUR (C'est ici que se joue le style) */}
+          {/* MENU ORDINATEUR */}
           <div className="hidden lg:flex lg:gap-x-12 items-center">
             {navigation.map((item) => (
               <a 
                 key={item.name} 
                 href={item.href} 
-                // STYLE AJUSTÉ : 
-                // text-sm (taille idéale)
-                // font-bold (bien lisible)
-                // uppercase (majuscule luxe)
-                // tracking-wide (espacement modéré et élégant)
-                className="text-sm font-bold uppercase tracking-wide text-gray-900 hover:text-blue-500 transition-colors duration-200 py-2 border-b-2 border-transparent hover:border-blue-500"
+                // MODIFICATION : text-base (plus grand que text-sm)
+                className="text-base font-bold uppercase tracking-wide text-gray-900 hover:text-blue-500 transition-colors duration-200 py-2 border-b-2 border-transparent hover:border-blue-500"
               >
                 {item.name}
               </a>
@@ -58,7 +54,7 @@ const Header = () => {
           </div>
         </nav>
 
-        {/* MENU MOBILE (Pop-up téléphone) */}
+        {/* MENU MOBILE */}
         <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
           <div className="fixed inset-0 z-10" />
           <DialogPanel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
@@ -87,7 +83,8 @@ const Header = () => {
                     <a
                       key={item.name}
                       href={item.href}
-                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-bold uppercase tracking-wide text-gray-900 hover:bg-gray-50"
+                      // J'ai aussi passé le menu mobile en text-lg (un poil plus grand pour le tactile)
+                      className="-mx-3 block rounded-lg px-3 py-2 text-lg font-bold uppercase tracking-wide text-gray-900 hover:bg-gray-50"
                     >
                       {item.name}
                     </a>
