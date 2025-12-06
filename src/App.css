@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  font-family: "itc-avant-garde-gothic-pro" !important;
+/* --- CONFIGURATION GLOBALE LUXE --- */
+@layer base {
+  /* 1. Les Titres : Police "Serif" (Élégante / Playfair Display) */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif text-gray-900 tracking-tight;
+  }
+
+  /* 2. Le Texte courant : Police "Sans" (Moderne / Lato) */
+  body {
+    @apply font-sans text-gray-600 antialiased;
+  }
+  
+  /* Animation d'apparition douce (pour le zoom image) */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
 }
