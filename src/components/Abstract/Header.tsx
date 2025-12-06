@@ -36,7 +36,8 @@ const Header = () => {
           </div>
           <div className="hidden lg:flex lg:gap-x-12">
             {navigation.map((item) => (
-              <a key={item.name} href={item.href} className="text-sm font-semibold leading-6 text-gray-900 hover:underline">
+              // MODIFICATION ICI : text-lg (plus grand) et font-bold (plus gras)
+              <a key={item.name} href={item.href} className="text-lg font-bold leading-6 text-gray-900 hover:underline transition">
                 {item.name}
               </a>
             ))}
