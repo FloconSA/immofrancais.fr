@@ -23,7 +23,7 @@ const Header = () => {
           <div className="flex">
             <a href="/" className="-m-1.5 p-1.5 transition-opacity hover:opacity-80">
               <span className="sr-only">ImmoFrançais</span>
-              <img alt="Logo" src="/home.png" className="h-6 aspect-square" />
+              <img alt="Logo" src="/logo.svg" className="h-6 aspect-square" />
             </a>
           </div>
 
@@ -63,7 +63,7 @@ const Header = () => {
                 <span className="sr-only">ImmoFrançais</span>
                 <img
                   alt=""
-                  src="/home.png"
+                  src="/logo.svg"
                   className="h-6 aspect-square"
                 />
               </a>
