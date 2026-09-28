@@ -1,0 +1,9 @@
+# Configuration de mise en ligne Netlify
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # Désactive la télémétrie de Refine pendant la construction
+  REFINE_NO_TELEMETRY = "true"
