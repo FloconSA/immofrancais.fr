@@ -24,3 +24,7 @@ _.ntvs_
 _.njsproj
 _.sln
 \*.sw?
+
+# Secrets (clé Strapi) : ne jamais envoyer sur GitHub
+.env
+.claude/
