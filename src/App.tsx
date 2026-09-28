@@ -5,6 +5,8 @@ import Home from "./pages/Home";
 import Housing from "./pages/Housing";
 import HousingDetails from "./pages/HousingDetails";
 import _404 from "./pages/404";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
 function App() {
@@ -25,6 +27,7 @@ function App() {
         </div>
       </div>
       <Footer />
+      <ToastContainer position="bottom-right" />
     </main>
   );
 }

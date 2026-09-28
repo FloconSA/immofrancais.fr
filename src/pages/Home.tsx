@@ -1,34 +1,15 @@
 import { useEffect, useState } from "react";
 import Button from "../components/Button";
-import { API_URL } from "../constants";
 import House from "../components/House";
 import Contact from "../components/Abstract/Contact";
+import { fetchHouses } from "../api";
 
 const Home = () => {
   const [houses, setHouses] = useState([])
 
   useEffect(() => {
     (async () => {
-      const res = await fetch(`${API_URL}/api/houses?sort=id:desc&populate=*`)
-      const data = await res.json()
-
-      const parsed = data.data.map((house: any) => ({
-  id: house.documentId,
-  name: house.name,
-  type: house.type,
-  price: house.price,
-  rooms: house.rooms,
-  bedrooms: house.bedrooms,
-  surface: house.surface,
-  description: house.description,
-  caracteristics: (house.caracteristics || "").split('\n'),
-  facilities: (house.facilities || "").split('\n'),
-  DPE: house.DPE,
-  GES: house.GES,
-  // C'est ici que ça change pour les images v5 :
-  images: house.images ? house.images.map((pic: any) => pic.url) : []
-}))
-
+      const parsed = await fetchHouses()
       setHouses(parsed.slice(0, 3))
     })()
   }, [])
@@ -45,14 +26,14 @@ const Home = () => {
               <h1 className="font-black text-4xl md:text-6xl">ImmoFrançais</h1>
               <h2 className="font-normal text-2xl md:text-4xl">Propriétés à vendre</h2>
             </div>
-            <div className="hidden md:block">
+            <div>
               <Button label="Consulter" href="/housing" as="a" />
             </div>
 
           </div>
         </div>
         <div className="mb-24 md:p-24">
-          <img src="/lyon.png" alt="" className="object-cover rounded-md" />
+          <img src="/lyon.webp" alt="Vue panoramique de Lyon" width={1200} height={1201} className="object-cover rounded-md" />
         </div>
       </section>
 

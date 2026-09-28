@@ -48,7 +48,7 @@ const Footer = () => {
         </div>
         <div className="mt-8 md:order-1 md:mt-0">
           <p className="text-center text-xs leading-5 text-gray-500">
-            &copy; {(new Date()).getFullYear()} IMMO FRANÇAIS, Inc. Tous droits réservés.
+            &copy; {(new Date()).getFullYear()} ImmoFrançais. Tous droits réservés.
           </p>
         </div>
       </div>

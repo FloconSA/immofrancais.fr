@@ -1,22 +1,19 @@
 import { useEffect, useState, useCallback } from "react"
 import { useParams } from "react-router-dom"
-import { ShareIcon, XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline"
+import { ShareIcon, XMarkIcon, ChevronLeftIcon, ChevronRightIcon, EnvelopeIcon, PhoneIcon } from "@heroicons/react/24/outline"
 import { Carousel } from "@material-tailwind/react"
+import { toast } from "react-toastify"
 
 import { DPE, GES } from "../components/Abstract/DPE-GES"
-import { API_URL } from "../constants"
+import { API_URL, PHONE_NUMBERS } from "../constants"
 import Loading from "../components/Loading"
+import Contact from "../components/Abstract/Contact"
+import { currency, parseHouse, plural } from "../api"
 
 const HousingDetails = () => {
   const [house, setHouse] = useState<any>(null)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const { id } = useParams()
-
-  const currency = new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
-    maximumFractionDigits: 0, // Dans le luxe, on évite les centimes (,00)
-  })
 
   useEffect(() => {
     (async () => {
@@ -29,24 +26,7 @@ const HousingDetails = () => {
         }
 
         const data = await res.json()
-        const houseData = data.data
-
-        setHouse({
-          id: houseData.id,
-          name: houseData.name,
-          type: houseData.type,
-          price: houseData.price,
-          rooms: houseData.rooms,
-          bedrooms: houseData.bedrooms,
-          surface: houseData.surface,
-          description: houseData.description,
-          caracteristics: (houseData.caracteristics || "").split('\n'),
-          facilities: (houseData.facilities || "").split('\n'),
-          DPE: houseData.DPE,
-          GES: houseData.GES,
-          // IMAGE QUALITÉ MAXIMALE (Sécurisée)
-          images: houseData.images ? houseData.images.map((pic: any) => pic.url) : []
-        })
+        setHouse(parseHouse(data.data))
       } catch (err) {
         console.error(err)
       }
@@ -96,7 +76,7 @@ const HousingDetails = () => {
             <XMarkIcon className="h-8 w-8 drop-shadow-lg" />
           </button>
           <img 
-            src={`${API_URL}${selectedImage}`} 
+            src={selectedImage} 
             alt="Zoom" 
             className="max-h-[95vh] max-w-[95vw] object-contain shadow-2xl animate-fade-in cursor-default select-none"
             onClick={(e) => e.stopPropagation()} 
@@ -126,17 +106,27 @@ const HousingDetails = () => {
         {/* DETAILS (Surface, Chambres) : Plus gros et aéré */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-6 md:mt-8 gap-4">
           <div className="text-xl md:text-2xl text-gray-500 font-light flex flex-wrap gap-4 md:gap-8">
-            <span>{house.rooms} pièces</span>
+            <span>{plural(house.rooms, "pièce")}</span>
             <span className="hidden md:inline text-gray-300">|</span>
-            <span>{house.bedrooms} chambres</span>
+            <span>{plural(house.bedrooms, "chambre")}</span>
             <span className="hidden md:inline text-gray-300">|</span>
             <span>{house.surface} m²</span>
           </div>
 
-          <button onClick={() => navigator.clipboard.writeText(window.location.href)} className="group text-lg text-gray-500 hover:text-blue-500 transition flex items-center gap-2 border border-gray-200 px-4 py-2 rounded-full hover:border-blue-500">
+          <div className="flex flex-wrap gap-3">
+          <a href="#contact" className="text-lg text-white bg-blue-500 hover:bg-blue-600 transition flex items-center gap-2 px-5 py-2 rounded-full shadow-md">
+            <EnvelopeIcon className="h-5 w-5" />
+            <span>Contacter l'agence</span>
+          </a>
+          <a href={`tel:${PHONE_NUMBERS[1].tel}`} className="text-lg text-gray-700 hover:text-blue-500 transition flex items-center gap-2 border border-gray-200 px-4 py-2 rounded-full hover:border-blue-500">
+            <PhoneIcon className="h-5 w-5" />
+            <span>{PHONE_NUMBERS[1].label}</span>
+          </a>
+          <button onClick={() => { navigator.clipboard.writeText(window.location.href); toast.success("Lien de l'annonce copié") }} className="group text-lg text-gray-500 hover:text-blue-500 transition flex items-center gap-2 border border-gray-200 px-4 py-2 rounded-full hover:border-blue-500">
             <ShareIcon className="h-5 w-5 group-hover:scale-110 transition" /> 
             <span>Partager cette annonce</span>
           </button>
+          </div>
         </div>
       </div>
 
@@ -150,9 +140,9 @@ const HousingDetails = () => {
           navigation={selectedImage ? () => null : undefined}
           placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}
         >
-          {house.images.map((pic: string) =>
-            <div key={pic} className="h-full w-full cursor-pointer" onClick={() => setSelectedImage(pic)}>
-              <img alt="" src={`${API_URL}${pic}`} className="h-full w-full object-cover" />
+          {house.slides.map((pic: string, idx: number) =>
+            <div key={pic} className="h-full w-full cursor-pointer" onClick={() => setSelectedImage(house.images[idx])}>
+              <img alt={`${house.name} - photo ${idx + 1}`} src={pic} className="h-full w-full object-cover" />
             </div>
           )}
         </Carousel>
@@ -207,6 +197,8 @@ const HousingDetails = () => {
           </div>
         </div>
       </div>
+
+      <Contact defaultMessage={`Bonjour, je suis intéressé(e) par le bien « ${house.name} » (${currency.format(house.price)}). Pourriez-vous me recontacter ?`} />
     </div >
   )
 }

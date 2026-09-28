@@ -8,11 +8,11 @@ import {
 import { useFormik } from 'formik';
 import emailjs from '@emailjs/browser';
 import { toast } from 'react-toastify';
-import { EMAILJS_KEY, EMAILJS_SERVICE, EMAILJS_TEMPLATE } from '../../constants';
+import { EMAILJS_KEY, EMAILJS_SERVICE, EMAILJS_TEMPLATE, PHONE_NUMBERS } from '../../constants';
 import Button from '../Button';
 
 
-const Contact = () => {
+const Contact = ({ defaultMessage = '' }: { defaultMessage?: string }) => {
   const [isLoading, setLoading] = useState(false);
   const formik = useFormik({
     initialValues: {
@@ -20,7 +20,7 @@ const Contact = () => {
       lastName: '',
       email: '',
       phone: '',
-      message: '',
+      message: defaultMessage,
     },
     onSubmit: async (data: any) => {
       try {
@@ -31,15 +31,16 @@ const Contact = () => {
           data,
           EMAILJS_KEY,
         );
-        toast.success('Nous avons bien reçu votre demande', {
+        toast.success('Merci ! Nous avons bien reçu votre message et vous recontactons rapidement.', {
           theme: "colored",
         });
+        // On ne vide le formulaire qu'en cas de succès, pour ne pas perdre le message
+        formik.resetForm()
       } catch (error) {
-        toast.error('Il semblerait qu\'une erreur soit survenue', {
+        toast.error('Votre message n\'a pas pu être envoyé. Réessayez ou appelez-nous directement.', {
           theme: "colored",
         });
       }
-      formik.resetForm()
       setLoading(false);
     },
   });
@@ -47,7 +48,7 @@ const Contact = () => {
   return (
     <section className="mx-auto max-w-7xl py-16 px-4 sm:py-24 sm:px-6 lg:px-8" id="contact">
       <div className="relativet">
-        <h2 className="font-title text-3xl font-bold mb-4">Nous recrutons</h2>
+        <h2 className="font-title text-3xl font-bold mb-4">Contactez-nous</h2>
         <div className="grid grid-cols-1 lg:grid-cols-3">
           {/* Contact information */}
           <div className="relative overflow-hidden bg-immo-blue py-10 px-6 sm:px-10 xl:p-12 rounded-2xl shadow-lg">
@@ -149,24 +150,17 @@ const Contact = () => {
             </div>
             <h3 className="text-lg">Informations de contact</h3>
             <dl className="mt-8 space-y-6">
-              <dt>
-                <span className="sr-only">Phone number</span>
-              </dt>
-              <dd className="flex">
-                <PhoneIcon className="h-6 w-6 flex-shrink-0 " aria-hidden="true" />
-                <div className="flex flex-col">
-                  <a href="tel:+33785581393" className="ml-3 hover:underline">(+33) 07 85 58 13 93</a>
+              {PHONE_NUMBERS.map((phone) => (
+                <div key={phone.tel}>
+                  <dt>
+                    <span className="sr-only">Téléphone</span>
+                  </dt>
+                  <dd className="flex">
+                    <PhoneIcon className="h-6 w-6 flex-shrink-0 " aria-hidden="true" />
+                    <a href={`tel:${phone.tel}`} className="ml-3 hover:underline">{phone.label}</a>
+                  </dd>
                 </div>
-              </dd>
-              <dt>
-                <span className="sr-only">Phone number</span>
-              </dt>
-              <dd className="flex">
-                <PhoneIcon className="h-6 w-6 flex-shrink-0 " aria-hidden="true" />
-                <div className="flex flex-col">
-                  <a href="tel:+33642233006" className="ml-3 hover:underline">(+33) 06 64 42 04 53</a>
-                </div>
-              </dd>
+              ))}
               <dt>
                 <span className="sr-only">Email</span>
               </dt>
@@ -301,7 +295,7 @@ const Contact = () => {
                     !formik.values.email ||
                     !formik.values.message
                   }
-                  label="Envoyer"
+                  label={isLoading ? "Envoi en cours…" : "Envoyer"}
                 />
               </div>
             </form>
