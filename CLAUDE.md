@@ -5,8 +5,15 @@ Réponds toujours en français, simplement : l'utilisateur n'est pas développeu
 
 ## Mise en ligne
 - Tout envoi sur la branche `master` de GitHub (`FloconSA/immofrancais.fr`, dépôt **public**) est publié automatiquement par Netlify en 1 à 2 minutes.
-- Vérifie `npx tsc --noEmit` et `npm run build` avant d'envoyer.
+- Pour un changement à faire valider : travaille sur une autre branche et ouvre une pull request ; Netlify publie alors une adresse de test (`deploy-preview-<n>--…netlify.app`) sans toucher au site en ligne.
+- Vérifie `npx tsc --noEmit` et `npm run build` avant d'envoyer. Lancer le site en local : `npm run dev`.
 - `immofrancais.fr` (sans tiret) n'appartient pas à l'utilisateur : ne pas s'en occuper.
+
+## Organisation du code
+- React 19, React Router 7 (transitions animées entre pages via `viewTransition`), Tailwind 3, Vite 7. Pas d'autre bibliothèque d'interface : garder le site léger.
+- Couleurs (clair / sombre) et animations : `src/styles.css`. La couleur d'accent (bleu Klein #002FA7) est la variable `--accent`. Le mode sombre est gris anthracite (#242529), pas noir : l'utilisateur le trouvait trop sombre.
+- Pages : `src/pages/` (accueil, liste, fiche d'un bien, simulateurs, contact, 404). Données et calculs : `src/lib/` (`houses.ts` pour les annonces, `finance.ts` pour les simulateurs, `geo.ts` pour la carte).
+- Carte de la fiche : commune devinée depuis le titre de l'annonce (après le tiret, ex. « Dernier étage – Four ») ou la description, localisée par le géocodeur de l'IGN, fond de carte Plan IGN (gratuit, sans clé).
 
 ## Annonces (backend Strapi 5)
 Les annonces ne sont pas dans ce code : elles sont dans Strapi, hébergé sur Railway.
