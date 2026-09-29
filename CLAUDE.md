@@ -11,7 +11,7 @@ Réponds toujours en français, simplement : l'utilisateur n'est pas développeu
 
 ## Organisation du code
 - React 19, React Router 7 (transitions animées entre pages via `viewTransition`), Tailwind 3, Vite 7. Pas d'autre bibliothèque d'interface : garder le site léger.
-- Couleurs (clair / sombre) et animations : `src/styles.css`. La couleur d'accent (bleu Klein lumineux #2448E0) est la variable `--accent`.
+- Couleurs (clair / sombre) et animations : `src/styles.css`. La couleur d'accent (bleu vif #2C66FF) est la variable `--accent`.
 - Pages : `src/pages/` (accueil, liste, fiche d'un bien, simulateurs, contact, 404). Données et calculs : `src/lib/` (`houses.ts` pour les annonces, `finance.ts` pour les simulateurs, `geo.ts` pour la carte).
 - Carte de la fiche : commune devinée depuis le titre de l'annonce (après le tiret, ex. « Dernier étage – Four ») ou la description, localisée par le géocodeur de l'IGN, fond de carte Plan IGN (gratuit, sans clé).
 
