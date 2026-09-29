@@ -4,7 +4,7 @@
 
 /* ================================================================== */
 /* Couleurs du site                                                    */
-/* Une seule couleur d'accent : un bleu vif et clair (--accent).       */
+/* Une seule couleur d'accent : le bleu Klein (--accent).              */
 /* Pour changer la couleur d'accent, il suffit de modifier ces lignes. */
 /* ================================================================== */
 
@@ -15,29 +15,30 @@
   --ink: 10 10 12;            /* texte principal */
   --muted: 96 96 104;         /* texte secondaire */
   --line: 228 228 224;        /* filets */
-  --accent: 44 102 255;       /* bleu vif #2C66FF : le plus clair qui garde le texte blanc lisible */
-  --accent-ink: 44 102 255;   /* accent utilisé pour du texte */
+  --accent: 0 47 167;         /* bleu Klein #002FA7 */
+  --accent-ink: 0 47 167;     /* accent utilisé pour du texte */
   --accent-soft: 234 238 252; /* fond teinté */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   /* Couleurs des graphiques (vérifiées pour les daltoniens) */
-  --series-1: #2c66ff;
+  --series-1: #2448e0;
   --series-2: #eb6834;
   --series-3: #1baf7a;
   --series-4: #eda100;
   color-scheme: light;
 }
 
+/* Mode sombre : gris anthracite plutôt que noir, plus doux pour les yeux */
 .dark {
-  --canvas: 9 9 11;
-  --surface: 20 20 23;
-  --soft: 17 17 20;
-  --ink: 244 244 245;
-  --muted: 160 160 170;
-  --line: 40 40 46;
-  --accent: 44 102 255;       /* même bleu qu'en mode clair */
-  --accent-ink: 150 170 255;  /* version plus pâle pour le texte sur fond noir */
-  --accent-soft: 22 27 56;
-  --series-1: #2c66ff;
+  --canvas: 36 37 41;         /* fond de page #242529 */
+  --surface: 51 52 58;        /* cartes, un cran plus clair */
+  --soft: 43 44 49;           /* sections alternées, champs */
+  --ink: 243 243 244;
+  --muted: 169 170 179;
+  --line: 61 62 69;
+  --accent: 51 85 255;        /* bleu Klein éclairci pour rester lisible sur fond sombre */
+  --accent-ink: 150 170 255;  /* version plus pâle pour le texte */
+  --accent-soft: 44 52 92;
+  --series-1: #5271ff;
   --series-2: #d95926;
   --series-3: #199e70;
   --series-4: #c98500;
@@ -443,7 +444,8 @@ dialog.sheet[open] .stagger > *:nth-child(5) { animation-delay: 240ms; }
   filter: grayscale(1) contrast(1.05) brightness(1.04);
 }
 .dark .map-tiles {
-  filter: grayscale(1) invert(1) brightness(0.82) contrast(0.95);
+  /* contraste réduit : le fond de carte devient gris anthracite, comme la page */
+  filter: grayscale(1) invert(1) contrast(0.72) brightness(1.02);
 }
 
 /* ================================================================== */

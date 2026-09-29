@@ -19,7 +19,7 @@ export const currentTheme = (): Theme =>
 
 const apply = (theme: Theme) => {
   document.documentElement.classList.toggle("dark", theme === "dark")
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "dark" ? "#09090B" : "#FBFBFA")
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "dark" ? "#242529" : "#FBFBFA")
   listeners.forEach((listener) => listener())
 }
 
