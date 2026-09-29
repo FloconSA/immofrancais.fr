@@ -4,7 +4,7 @@
 
 /* ================================================================== */
 /* Couleurs du site                                                    */
-/* Une seule couleur d'accent : le bleu Klein (--accent).              */
+/* Une seule couleur d'accent : un bleu Klein lumineux (--accent).    */
 /* Pour changer la couleur d'accent, il suffit de modifier ces lignes. */
 /* ================================================================== */
 
@@ -15,8 +15,8 @@
   --ink: 10 10 12;            /* texte principal */
   --muted: 96 96 104;         /* texte secondaire */
   --line: 228 228 224;        /* filets */
-  --accent: 0 47 167;         /* bleu Klein #002FA7 */
-  --accent-ink: 0 47 167;     /* accent utilisé pour du texte */
+  --accent: 36 72 224;        /* bleu Klein lumineux #2448E0 */
+  --accent-ink: 36 72 224;    /* accent utilisé pour du texte */
   --accent-soft: 234 238 252; /* fond teinté */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   /* Couleurs des graphiques (vérifiées pour les daltoniens) */
@@ -34,7 +34,7 @@
   --ink: 244 244 245;
   --muted: 160 160 170;
   --line: 40 40 46;
-  --accent: 51 85 255;        /* bleu Klein éclairci pour rester lisible sur fond noir */
+  --accent: 64 98 255;        /* version éclaircie pour rester lisible sur fond noir */
   --accent-ink: 150 170 255;
   --accent-soft: 22 27 56;
   --series-1: #3355ff;
