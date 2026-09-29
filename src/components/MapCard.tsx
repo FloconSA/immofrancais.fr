@@ -111,9 +111,6 @@ const MapCard = ({ place }: { place: Place }) => {
             ))}
           </div>
 
-          {/* Teinte bleue très légère pour accorder la carte au site */}
-          <div className="absolute inset-0 bg-accent/[0.08] mix-blend-multiply dark:bg-accent/[0.12] dark:mix-blend-screen" />
-
           <svg className="absolute inset-0 h-full w-full overflow-visible" aria-hidden="true">
             <circle cx={view.property.x} cy={view.property.y} r={view.zone} className="fill-accent/15 stroke-accent/40" strokeWidth={1} />
             {arc && (

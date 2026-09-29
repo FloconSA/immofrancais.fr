@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>ImmoFrançais — L'immobilier, en toute clarté</title>
     <meta name="description" content="ImmoFrançais, réseau immobilier 100 % digital basé à Lyon : biens à vendre et simulateurs de prêt, de frais de notaire et de budget." />
-    <meta name="theme-color" content="#FBFBFA" />
+    <meta name="theme-color" content="#F8F5EF" />
     <link rel="icon" href="/logo.svg" type="image/svg+xml" />
     <link rel="alternate icon" href="/favicon.ico" />
 
@@ -21,15 +21,15 @@
     <link rel="preload" as="fetch" crossorigin="anonymous" href="https://backend-immo-production-7c35.up.railway.app/api/houses?sort=id:desc&amp;populate=*" />
 
     <script>
-      // Applique le thème (clair / sombre) avant le premier affichage, pour éviter un flash blanc
+      // Apparence ivoire par défaut ; bleu nuit seulement si le visiteur l'a choisie avec le bouton lune.
+      // Appliquée avant le premier affichage, pour éviter un flash de la mauvaise couleur.
       (function () {
         var dark = false;
         try {
-          var saved = localStorage.getItem("theme");
-          dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+          dark = localStorage.getItem("apparence") === "dark";
         } catch (e) {}
         document.documentElement.classList.toggle("dark", dark);
-        document.querySelector('meta[name="theme-color"]').setAttribute("content", dark ? "#242529" : "#FBFBFA");
+        document.querySelector('meta[name="theme-color"]').setAttribute("content", dark ? "#13213A" : "#F8F5EF");
         // Sur l'accueil, la grande photo est demandée tout de suite
         if (location.pathname === "/") {
           var l = document.createElement("link");

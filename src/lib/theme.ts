@@ -2,31 +2,21 @@ import { useSyncExternalStore } from "react"
 
 export type Theme = "light" | "dark"
 
-const listeners = new Set<() => void>()
-const media = window.matchMedia("(prefers-color-scheme: dark)")
+// Apparence par défaut : ivoire (claire) pour tout le monde, quel que soit le réglage de l'appareil.
+// Le choix fait avec le bouton soleil / lune est retenu sous cette clé (lue aussi dans index.html).
+const STORAGE_KEY = "apparence"
+const THEME_COLORS: Record<Theme, string> = { light: "#F8F5EF", dark: "#13213A" }
 
-const savedTheme = (): Theme | null => {
-  try {
-    const value = localStorage.getItem("theme")
-    return value === "light" || value === "dark" ? value : null
-  } catch {
-    return null
-  }
-}
+const listeners = new Set<() => void>()
 
 export const currentTheme = (): Theme =>
   document.documentElement.classList.contains("dark") ? "dark" : "light"
 
 const apply = (theme: Theme) => {
   document.documentElement.classList.toggle("dark", theme === "dark")
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "dark" ? "#242529" : "#FBFBFA")
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", THEME_COLORS[theme])
   listeners.forEach((listener) => listener())
 }
-
-// Si le visiteur n'a rien choisi, on suit le réglage de son appareil
-media.addEventListener("change", (event) => {
-  if (!savedTheme()) apply(event.matches ? "dark" : "light")
-})
 
 /**
  * Change de thème. Avec `origin` (position du bouton), le nouveau thème
@@ -34,7 +24,7 @@ media.addEventListener("change", (event) => {
  */
 export const setTheme = (theme: Theme, origin?: { x: number; y: number }) => {
   try {
-    localStorage.setItem("theme", theme)
+    localStorage.setItem(STORAGE_KEY, theme)
   } catch {
     /* navigation privée : le choix ne sera simplement pas retenu */
   }
