@@ -4,6 +4,11 @@
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "20"
-  # Désactive la télémétrie de Refine pendant la construction
-  REFINE_NO_TELEMETRY = "true"
+  NODE_VERSION = "22"
+
+# Les fichiers du dossier assets ont un nom unique à chaque version :
+# le navigateur peut les garder en cache très longtemps.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

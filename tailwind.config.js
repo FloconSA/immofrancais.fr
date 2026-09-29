@@ -1,25 +1,31 @@
 /** @type {import('tailwindcss').Config} */
+
+// Les couleurs du site sont définies une seule fois dans src/styles.css (variables CSS),
+// avec une version claire et une version sombre. Ici on les rend utilisables par Tailwind.
+const token = (name) => `rgb(var(--${name}) / <alpha-value>)`;
+
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-    "./**/@material-tailwind/**/*.{html,js,ts,jsx,tsx,mdx}"
-  ],
+  content: ["./index.html", "./src/**/*.{ts,tsx}"],
+  darkMode: "class",
   theme: {
     extend: {
-      // --- AJOUT DES POLICES LUXE ICI ---
       fontFamily: {
-        // Pour le texte courant (Moderne, lisible)
-        sans: ['"Lato"', 'sans-serif'],
-        // Pour les titres (Élégant, style magazine)
-        serif: ['"Playfair Display"', 'serif'],
+        sans: ['"Geist Variable"', "ui-sans-serif", "system-ui", "-apple-system", '"Segoe UI"', "sans-serif"],
+        serif: ['"Instrument Serif"', "ui-serif", "Georgia", "serif"],
       },
-      // ----------------------------------
-      
       colors: {
-        "immo-blue": {
-          DEFAULT: "#7DC8FB"
+        canvas: token("canvas"),
+        surface: token("surface"),
+        soft: token("soft"),
+        ink: token("ink"),
+        muted: token("muted"),
+        line: token("line"),
+        accent: {
+          DEFAULT: token("accent"),
+          ink: token("accent-ink"),
+          soft: token("accent-soft"),
         },
+        // Couleurs officielles des étiquettes énergie
         DPE: {
           A: "#319C6D",
           B: "#54B254",
@@ -38,7 +44,13 @@ export default {
           F: "#3A3553",
           G: "#2A1B36",
         },
-      }
+      },
+      maxWidth: {
+        page: "80rem",
+      },
+      transitionTimingFunction: {
+        "out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",
+      },
     },
   },
   plugins: [],

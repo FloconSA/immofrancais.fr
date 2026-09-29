@@ -1,26 +1,47 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="ImmoFrançais - Réseau immobilier 100% digital"
-    />
-    <title>
-      ImmoFrançais
-    </title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.typekit.net/ryc1kmc.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>ImmoFrançais — L'immobilier, en toute clarté</title>
+    <meta name="description" content="ImmoFrançais, réseau immobilier 100 % digital basé à Lyon : biens à vendre et simulateurs de prêt, de frais de notaire et de budget." />
+    <meta name="theme-color" content="#FBFBFA" />
+    <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+    <link rel="alternate icon" href="/favicon.ico" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="ImmoFrançais" />
+    <meta property="og:title" content="ImmoFrançais — L'immobilier, en toute clarté" />
+    <meta property="og:description" content="Biens à vendre autour de Lyon et simulateurs pour chiffrer votre projet en quelques secondes." />
+    <meta property="og:image" content="https://immo-francais.fr/logo.jpg" />
+
+    <!-- Connexion anticipée au serveur des annonces, et téléchargement des annonces en parallèle du site -->
+    <link rel="preconnect" href="https://backend-immo-production-7c35.up.railway.app" crossorigin />
+    <link rel="preconnect" href="https://backend-immo-production-7c35.up.railway.app" />
+    <link rel="preload" as="fetch" crossorigin="anonymous" href="https://backend-immo-production-7c35.up.railway.app/api/houses?sort=id:desc&amp;populate=*" />
+
+    <script>
+      // Applique le thème (clair / sombre) avant le premier affichage, pour éviter un flash blanc
+      (function () {
+        var dark = false;
+        try {
+          var saved = localStorage.getItem("theme");
+          dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+        } catch (e) {}
+        document.documentElement.classList.toggle("dark", dark);
+        document.querySelector('meta[name="theme-color"]').setAttribute("content", dark ? "#09090B" : "#FBFBFA");
+        // Sur l'accueil, la grande photo est demandée tout de suite
+        if (location.pathname === "/") {
+          var l = document.createElement("link");
+          l.rel = "preload"; l.as = "image"; l.href = "/lyon.webp"; l.setAttribute("fetchpriority", "high");
+          document.head.appendChild(l);
+        }
+      })();
+    </script>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>Activez JavaScript pour afficher ce site.</noscript>
     <div id="root"></div>
     <script type="module" src="/src/index.tsx"></script>
-    </body>
+  </body>
 </html>

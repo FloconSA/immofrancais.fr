@@ -1,35 +1,26 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Footer from "./components/Abstract/Footer";
-import Header from "./components/Abstract/Header";
-import Home from "./pages/Home";
-import Housing from "./pages/Housing";
-import HousingDetails from "./pages/HousingDetails";
-import _404 from "./pages/404";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import "./App.css";
+import { createBrowserRouter, RouterProvider } from "react-router"
+import Layout from "./components/Layout"
+import Home from "./pages/Home"
+import Listings from "./pages/Listings"
+import ContactPage from "./pages/ContactPage"
+import NotFound from "./pages/NotFound"
 
-function App() {
-  return (
-    <main className="bg-gray-50 min-h-screen flex flex-col">
-      <Header />
-      <div className="px-8 xl:px-0 flex-1">
-        <div className="relative z-10">
-          <BrowserRouter>
-            <Routes>
-              <Route index element={<Home />} />
-              <Route path="/housing" element={<Housing />} />
-              <Route path="/housing/:id" element={<HousingDetails />} />
+// Les pages les plus lourdes (fiche d'un bien, simulateurs) sont chargées à la demande
+const router = createBrowserRouter([
+  {
+    Component: Layout,
+    HydrateFallback: () => null,
+    children: [
+      { index: true, Component: Home },
+      { path: "housing", Component: Listings },
+      { path: "housing/:id", lazy: () => import("./pages/HouseDetails").then((m) => ({ Component: m.default })) },
+      { path: "simulateurs", lazy: () => import("./pages/Simulation").then((m) => ({ Component: m.default })) },
+      { path: "contact", Component: ContactPage },
+      { path: "*", Component: NotFound },
+    ],
+  },
+])
 
-              <Route path="*" element={<_404 />} />
-            </Routes>
-          </BrowserRouter >
-        </div>
-      </div>
-      <Footer />
-      <ToastContainer position="bottom-right" />
-    </main>
-  );
-}
+const App = () => <RouterProvider router={router} />
 
-export default App;
+export default App
