@@ -11,7 +11,7 @@ Réponds toujours en français, simplement : l'utilisateur n'est pas développeu
 
 ## Organisation du code
 - React 19, React Router 7 (transitions animées entre pages via `viewTransition`), Tailwind 3, Vite 7. Pas d'autre bibliothèque d'interface : garder le site léger.
-- Couleurs (clair / sombre) et animations : `src/styles.css`. La couleur d'accent (bleu Klein #002FA7) est la variable `--accent`. Le mode sombre est gris anthracite (#242529), pas noir : l'utilisateur le trouvait trop sombre.
+- Couleurs et animations : `src/styles.css`. Fond ivoire (#F8F5EF) affiché par défaut pour tout le monde, même si l'appareil est en mode sombre ; le bouton lune passe en bleu nuit (#13213A), choix retenu dans le navigateur (clé `apparence`). L'utilisateur veut un rendu haut de gamme : il a refusé le fond noir puis le gris anthracite. Couleur d'accent : bleu Klein #002FA7 (variable `--accent`).
 - Pages : `src/pages/` (accueil, liste, fiche d'un bien, simulateurs, contact, 404). Données et calculs : `src/lib/` (`houses.ts` pour les annonces, `finance.ts` pour les simulateurs, `geo.ts` pour la carte).
 - Carte de la fiche : commune devinée depuis le titre de l'annonce (après le tiret, ex. « Dernier étage – Four ») ou la description, localisée par le géocodeur de l'IGN, fond de carte Plan IGN (gratuit, sans clé).
 

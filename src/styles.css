@@ -8,16 +8,17 @@
 /* Pour changer la couleur d'accent, il suffit de modifier ces lignes. */
 /* ================================================================== */
 
+/* Apparence par défaut : ivoire, blanc cassé chaud façon magazine de luxe */
 :root {
-  --canvas: 251 251 250;      /* fond de page */
-  --surface: 255 255 255;     /* cartes */
-  --soft: 243 243 241;        /* sections alternées, champs */
-  --ink: 10 10 12;            /* texte principal */
-  --muted: 96 96 104;         /* texte secondaire */
-  --line: 228 228 224;        /* filets */
+  --canvas: 248 245 239;      /* fond de page #F8F5EF */
+  --surface: 255 253 249;     /* cartes */
+  --soft: 240 236 228;        /* sections alternées, champs */
+  --ink: 22 20 17;            /* texte principal */
+  --muted: 105 99 91;         /* texte secondaire */
+  --line: 226 220 209;        /* filets */
   --accent: 0 47 167;         /* bleu Klein #002FA7 */
   --accent-ink: 0 47 167;     /* accent utilisé pour du texte */
-  --accent-soft: 234 238 252; /* fond teinté */
+  --accent-soft: 232 235 248; /* fond teinté */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   /* Couleurs des graphiques (vérifiées pour les daltoniens) */
   --series-1: #2448e0;
@@ -27,18 +28,18 @@
   color-scheme: light;
 }
 
-/* Mode sombre : gris anthracite plutôt que noir, plus doux pour les yeux */
+/* Mode sombre (bouton lune) : bleu nuit avec texte ivoire */
 .dark {
-  --canvas: 36 37 41;         /* fond de page #242529 */
-  --surface: 51 52 58;        /* cartes, un cran plus clair */
-  --soft: 43 44 49;           /* sections alternées, champs */
-  --ink: 243 243 244;
-  --muted: 169 170 179;
-  --line: 61 62 69;
+  --canvas: 19 33 58;         /* fond de page #13213A */
+  --surface: 31 49 84;        /* cartes, un cran plus clair */
+  --soft: 23 38 66;           /* sections alternées, champs */
+  --ink: 245 242 235;         /* texte ivoire */
+  --muted: 163 174 196;
+  --line: 46 65 101;
   --accent: 51 85 255;        /* bleu Klein éclairci pour rester lisible sur fond sombre */
-  --accent-ink: 150 170 255;  /* version plus pâle pour le texte */
-  --accent-soft: 44 52 92;
-  --series-1: #5271ff;
+  --accent-ink: 160 180 255;  /* version plus pâle pour le texte */
+  --accent-soft: 36 56 104;
+  --series-1: #6b86ff;
   --series-2: #d95926;
   --series-3: #199e70;
   --series-4: #c98500;
@@ -439,13 +440,13 @@ dialog.sheet[open] .stagger > *:nth-child(5) { animation-delay: 240ms; }
   to { transform: scale(4.5); opacity: 0; }
 }
 
-/* Plan IGN passé en noir et blanc (et inversé en mode sombre) */
+/* Plan IGN passé en noir et blanc, teinté pour s'accorder au fond :
+   chaud sur l'ivoire, inversé et bleuté sur le bleu nuit */
 .map-tiles {
-  filter: grayscale(1) contrast(1.05) brightness(1.04);
+  filter: grayscale(1) sepia(0.22) contrast(1.02) brightness(1.03);
 }
 .dark .map-tiles {
-  /* contraste réduit : le fond de carte devient gris anthracite, comme la page */
-  filter: grayscale(1) invert(1) contrast(0.72) brightness(1.02);
+  filter: grayscale(1) invert(1) contrast(0.78) sepia(0.6) hue-rotate(182deg) saturate(1.6) brightness(0.92);
 }
 
 /* ================================================================== */
