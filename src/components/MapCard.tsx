@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react"
+import { useMemo, useRef, useState } from "react"
 import { ArrowUpRightIcon } from "@heroicons/react/20/solid"
 import { LYON, Place, TILE, project } from "../lib/geo"
 import { useInView, useSize } from "../lib/hooks"
@@ -12,6 +12,35 @@ import { cn, number } from "../lib/format"
 const tileUrl = (z: number, x: number, y: number) =>
   "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2" +
   `&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/png&TILEMATRIX=${z}&TILEROW=${y}&TILECOL=${x}`
+
+/**
+ * Une tuile de la carte. Le serveur de l'IGN refuse parfois une tuile de façon ponctuelle :
+ * on la redemande alors (deux fois au plus), et elle reste invisible tant qu'elle n'est pas
+ * chargée, pour ne jamais afficher d'icône d'image cassée.
+ */
+const Tile = ({ src, left, top }: { src: string; left: number; top: number }) => {
+  const [attempt, setAttempt] = useState(0)
+  const [loaded, setLoaded] = useState(false)
+  return (
+    <img
+      src={attempt ? `${src}&essai=${attempt}` : src}
+      alt=""
+      width={TILE}
+      height={TILE}
+      loading="lazy"
+      decoding="async"
+      draggable={false}
+      onLoad={() => setLoaded(true)}
+      onError={() => {
+        setLoaded(false)
+        if (attempt < 2) setTimeout(() => setAttempt((n) => n + 1), 800 * (attempt + 1))
+      }}
+      className={cn("absolute max-w-none select-none transition-opacity duration-500", loaded ? "opacity-100" : "opacity-0")}
+      style={{ left, top, width: TILE, height: TILE }}
+    />
+  )
+}
+
 const MapCard = ({ place }: { place: Place }) => {
   const box = useRef<HTMLDivElement>(null)
   const { width, height } = useSize(box)
@@ -78,18 +107,7 @@ const MapCard = ({ place }: { place: Place }) => {
         <div className={cn("absolute inset-0 transition-transform duration-[1.6s] ease-out-expo", inView ? "scale-100" : "scale-[1.08]")}>
           <div className="map-tiles absolute inset-0">
             {view.tiles.map((t) => (
-              <img
-                key={`${view.zoom}-${t.x}-${t.y}-${t.left}`}
-                src={tileUrl(view.zoom, t.x, t.y)}
-                alt=""
-                width={TILE}
-                height={TILE}
-                loading="lazy"
-                decoding="async"
-                draggable={false}
-                className="absolute max-w-none select-none"
-                style={{ left: t.left, top: t.top, width: TILE, height: TILE }}
-              />
+              <Tile key={`${view.zoom}-${t.x}-${t.y}-${t.left}`} src={tileUrl(view.zoom, t.x, t.y)} left={t.left} top={t.top} />
             ))}
           </div>
 
