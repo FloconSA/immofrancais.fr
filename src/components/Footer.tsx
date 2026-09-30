@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import { ReactNode, useLayoutEffect, useRef, useState } from "react"
 import { Link } from "react-router"
 import { ArrowUpRightIcon } from "@heroicons/react/20/solid"
 import Logo from "./Logo"
@@ -57,28 +57,40 @@ const Footer = () => (
 
     {/* Grand nom en filigrane, toujours exactement à la largeur de la page */}
     <div aria-hidden="true" className="container-page select-none">
-      <svg viewBox="0 0 1000 150" className="-mb-[3%] block w-full">
-        <defs>
-          <linearGradient id="wordmark-fade" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" style={{ stopColor: "rgb(var(--ink))", stopOpacity: 0.13 }} />
-            <stop offset="0.9" style={{ stopColor: "rgb(var(--ink))", stopOpacity: 0 }} />
-          </linearGradient>
-        </defs>
-        <text
-          x="0"
-          y="136"
-          textLength="1000"
-          lengthAdjust="spacingAndGlyphs"
-          fill="url(#wordmark-fade)"
-          className="font-semibold"
-          style={{ fontSize: 176, letterSpacing: "-0.06em" }}
-        >
-          ImmoFrançais
-        </text>
-      </svg>
+      <Wordmark />
     </div>
   </footer>
 )
+
+// Le cadre s'ajuste à la largeur réelle du mot (mesurée) : plus fiable sur mobile que d'étirer le texte
+const Wordmark = () => {
+  const text = useRef<SVGTextElement>(null)
+  const [width, setWidth] = useState(1000)
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      const w = text.current?.getBBox().width
+      if (w) setWidth(Math.ceil(w))
+    }
+    measure()
+    // la police peut arriver après le premier affichage
+    document.fonts?.ready.then(measure)
+  }, [])
+
+  return (
+    <svg viewBox={`-4 0 ${width + 8} 175`} className="-mb-[1.5%] block w-full">
+      <defs>
+        <linearGradient id="wordmark-fade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" style={{ stopColor: "rgb(var(--ink))", stopOpacity: 0.13 }} />
+          <stop offset="1" style={{ stopColor: "rgb(var(--ink))", stopOpacity: 0.02 }} />
+        </linearGradient>
+      </defs>
+      <text ref={text} x="0" y="136" fill="url(#wordmark-fade)" className="font-semibold" style={{ fontSize: 176, letterSpacing: "-0.06em" }}>
+        ImmoFrançais
+      </text>
+    </svg>
+  )
+}
 
 const FooterColumn = ({ title, className, children }: { title: string; className?: string; children: ReactNode }) => (
   <div className={className}>
