@@ -6,11 +6,16 @@ import Reveal, { RisingWords } from "../components/Reveal"
 import Contact from "../components/Contact"
 import MiniSimulator from "../components/simulators/MiniSimulator"
 import { useHouses } from "../lib/houses"
-import { useScrollProgress } from "../lib/hooks"
+import { usePageMeta, useScrollProgress } from "../lib/hooks"
 import { plural } from "../lib/format"
 
 const Home = () => {
   const { houses, loading, error } = useHouses()
+  // Mêmes textes que dans index.html
+  usePageMeta({
+    title: "ImmoFrançais — L'immobilier à Lyon, en toute clarté",
+    description: "ImmoFrançais, réseau immobilier 100 % digital basé à Lyon : biens à vendre et simulateurs de prêt, de frais de notaire et de budget.",
+  })
   const [featured, ...others] = houses ?? []
 
   return (

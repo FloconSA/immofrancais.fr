@@ -3,6 +3,7 @@ import HouseCard, { HouseCardSkeleton } from "../components/HouseCard"
 import Reveal, { RisingWords } from "../components/Reveal"
 import { Segmented } from "../components/simulators/fields"
 import { useHouses } from "../lib/houses"
+import { usePageMeta } from "../lib/hooks"
 import { plural } from "../lib/format"
 
 type Sort = "recent" | "price-asc" | "price-desc" | "surface"
@@ -17,6 +18,10 @@ const SORTS: { value: Sort; label: string }[] = [
 const Listings = () => {
   const { houses, loading, error, retry } = useHouses()
   const [sort, setSort] = useState<Sort>("recent")
+  usePageMeta({
+    title: "Biens à vendre autour de Lyon",
+    description: "Les biens à vendre d'ImmoFrançais autour de Lyon : photos, prix, surface, diagnostic énergétique et localisation de chaque annonce.",
+  })
 
   const sorted = useMemo(() => {
     const list = [...(houses ?? [])]

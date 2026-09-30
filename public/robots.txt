@@ -1,0 +1,5 @@
+# Consignes pour les moteurs de recherche : tout le site peut être lu
+User-agent: *
+Allow: /
+
+Sitemap: https://immo-francais.fr/sitemap.xml

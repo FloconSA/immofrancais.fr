@@ -1,12 +1,17 @@
 import { useSearchParams } from "react-router"
 import Simulators, { TABS, TabId } from "../components/simulators/Simulators"
 import Reveal, { RisingWords } from "../components/Reveal"
+import { usePageMeta } from "../lib/hooks"
 
 const Simulation = () => {
   const [params, setParams] = useSearchParams()
   const tabParam = params.get("onglet")
   const initialTab = TABS.some((t) => t.id === tabParam) ? (tabParam as TabId) : "pret"
   const initialPrice = Number(params.get("prix")) || undefined
+  usePageMeta({
+    title: "Simulateurs immobiliers : prêt, frais de notaire, budget",
+    description: "Calculez gratuitement vos mensualités de prêt immobilier, vos frais de notaire et le budget total de votre achat, en quelques secondes.",
+  })
 
   // L'onglet ouvert et le prix sont gardés dans l'adresse : un lien partagé rouvre la même simulation
   const updateParam = (key: string, value: string) =>

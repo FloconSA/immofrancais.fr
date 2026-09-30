@@ -1,1 +1,12 @@
-/*    /index.html   200
+# Copie du site créée automatiquement par Netlify : renvoyée vers l'adresse officielle,
+# pour que Google ne voie qu'un seul site
+https://precious-heliotrope-64c3fa.netlify.app/*  https://immo-francais.fr/:splat  301!
+
+# Pages du site, toutes affichées par index.html
+/housing      /index.html  200
+/housing/*    /index.html  200
+/simulateurs  /index.html  200
+/contact      /index.html  200
+
+# Toute autre adresse : page « introuvable », avec le code 404 attendu par Google
+/*            /index.html  404

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>ImmoFrançais — L'immobilier, en toute clarté</title>
+    <title>ImmoFrançais — L'immobilier à Lyon, en toute clarté</title>
     <meta name="description" content="ImmoFrançais, réseau immobilier 100 % digital basé à Lyon : biens à vendre et simulateurs de prêt, de frais de notaire et de budget." />
     <meta name="theme-color" content="#F8F5EF" />
     <!-- Icône du site (onglets, résultats Google) : logo carré, en encre sombre ; version claire pour les onglets en mode sombre -->
@@ -13,9 +13,47 @@
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="ImmoFrançais" />
-    <meta property="og:title" content="ImmoFrançais — L'immobilier, en toute clarté" />
+    <meta property="og:title" content="ImmoFrançais — L'immobilier à Lyon, en toute clarté" />
     <meta property="og:description" content="Biens à vendre autour de Lyon et simulateurs pour chiffrer votre projet en quelques secondes." />
     <meta property="og:image" content="https://immo-francais.fr/logo.jpg" />
+
+    <!-- Carte d'identité lue par Google : nom du site et ses variantes, agence, logo, adresse, réseaux sociaux -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://immo-francais.fr/#site",
+            "url": "https://immo-francais.fr/",
+            "name": "ImmoFrançais",
+            "alternateName": ["Immo Français", "Immo-Francais"],
+            "inLanguage": "fr-FR",
+            "publisher": { "@id": "https://immo-francais.fr/#agence" }
+          },
+          {
+            "@type": "RealEstateAgent",
+            "@id": "https://immo-francais.fr/#agence",
+            "name": "ImmoFrançais",
+            "alternateName": "Immo Français",
+            "url": "https://immo-francais.fr/",
+            "logo": "https://immo-francais.fr/apple-touch-icon.png",
+            "image": "https://immo-francais.fr/logo.jpg",
+            "description": "Réseau immobilier 100 % digital basé à Lyon : biens à vendre et simulateurs de prêt, de frais de notaire et de budget.",
+            "telephone": "+33785581393",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "10 rue Commandant Faurax",
+              "postalCode": "69006",
+              "addressLocality": "Lyon",
+              "addressCountry": "FR"
+            },
+            "areaServed": { "@type": "City", "name": "Lyon" },
+            "sameAs": ["https://www.linkedin.com/company/immo-fran%C3%A7ais/", "https://www.instagram.com/immo.francais/"]
+          }
+        ]
+      }
+    </script>
 
     <!-- Connexion anticipée au serveur des annonces, et téléchargement des annonces en parallèle du site -->
     <link rel="preconnect" href="https://backend-immo-production-7c35.up.railway.app" crossorigin />
@@ -48,7 +86,10 @@
     </script>
   </head>
   <body>
-    <noscript>Activez JavaScript pour afficher ce site.</noscript>
+    <noscript>
+      <p>ImmoFrançais, réseau immobilier 100 % digital basé à Lyon. Activez JavaScript pour afficher ce site.</p>
+      <p><a href="/housing">Biens à vendre</a> · <a href="/simulateurs">Simulateurs</a> · <a href="/contact">Contact</a></p>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/index.tsx"></script>
   </body>
