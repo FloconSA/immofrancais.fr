@@ -30,10 +30,15 @@
         } catch (e) {}
         document.documentElement.classList.toggle("dark", dark);
         document.querySelector('meta[name="theme-color"]').setAttribute("content", dark ? "#13213A" : "#F8F5EF");
-        // Sur l'accueil, la grande photo est demandée tout de suite
+        // Sur l'accueil, la grande photo est demandée tout de suite (mêmes tailles que dans Home.tsx)
         if (location.pathname === "/") {
+          var portrait = window.matchMedia("(orientation: portrait)").matches;
           var l = document.createElement("link");
-          l.rel = "preload"; l.as = "image"; l.href = "/lyon.webp"; l.setAttribute("fetchpriority", "high");
+          l.rel = "preload"; l.as = "image"; l.setAttribute("fetchpriority", "high");
+          l.setAttribute("imagesrcset", portrait
+            ? "/lyon-portrait-720.webp 720w, /lyon-portrait-1080.webp 1080w"
+            : "/lyon-paysage-1280.webp 1280w, /lyon-paysage-1920.webp 1920w");
+          l.setAttribute("imagesizes", "100vw");
           document.head.appendChild(l);
         }
       })();

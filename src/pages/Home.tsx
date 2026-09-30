@@ -1,4 +1,4 @@
-import { CSSProperties, useRef } from "react"
+import { CSSProperties, useEffect, useRef, useState } from "react"
 import { Link } from "react-router"
 import { ArrowRightIcon } from "@heroicons/react/20/solid"
 import HouseCard, { HouseCardSkeleton } from "../components/HouseCard"
@@ -6,8 +6,12 @@ import Reveal, { RisingWords } from "../components/Reveal"
 import Contact from "../components/Contact"
 import MiniSimulator from "../components/simulators/MiniSimulator"
 import { useHouses } from "../lib/houses"
-import { useScrollProgress } from "../lib/hooks"
-import { plural } from "../lib/format"
+import { useMediaQuery, useScrollProgress } from "../lib/hooks"
+import { cn, plural } from "../lib/format"
+import paysageAv1 from "../assets/lyon-paysage-av1.mp4"
+import paysageH264 from "../assets/lyon-paysage-h264.mp4"
+import portraitAv1 from "../assets/lyon-portrait-av1.mp4"
+import portraitH264 from "../assets/lyon-portrait-h264.mp4"
 
 const Home = () => {
   const { houses, loading, error } = useHouses()
@@ -106,17 +110,28 @@ const Hero = ({ count }: { count?: number }) => {
   return (
     <section ref={ref} className="hero relative h-[100svh] min-h-[600px] overflow-hidden bg-neutral-950 text-white">
       <div className="hero-media absolute inset-0">
-        <img
-          src="/lyon.webp"
-          alt="Lyon au lever du soleil, vue depuis Fourvière"
-          width={1200}
-          height={1201}
-          fetchPriority="high"
-          className="h-full w-full object-cover object-[50%_60%]"
-        />
+        <div className="hero-zoom absolute inset-0">
+          {/* Première image de la vidéo : affichée tout de suite, la vidéo prend le relais sans raccord visible */}
+          <picture className="absolute inset-0">
+            <source media="(orientation: portrait)" srcSet="/lyon-portrait-720.webp 720w, /lyon-portrait-1080.webp 1080w" sizes="100vw" />
+            <img
+              src="/lyon-paysage-1920.webp"
+              srcSet="/lyon-paysage-1280.webp 1280w, /lyon-paysage-1920.webp 1920w"
+              sizes="100vw"
+              alt="Lyon vue du ciel, au-dessus de la basilique de Fourvière"
+              width={1920}
+              height={1080}
+              fetchPriority="high"
+              className="h-full w-full object-cover"
+            />
+          </picture>
+          <HeroVideo />
+        </div>
       </div>
       <div className="hero-shade absolute inset-0 bg-gradient-to-b from-black/55 via-black/15 to-black/85" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/25 to-transparent" />
+      {/* Bandeau sombre sous le menu : la vidéo passe sur des toits très clairs */}
+      <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/45 to-transparent" />
 
       <div className="hero-content container-page relative flex h-full flex-col justify-end pb-20 sm:pb-28">
         <p className="rise inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[13px] font-medium ring-1 ring-inset ring-white/20 backdrop-blur-md" style={{ "--delay": "100ms" } as CSSProperties}>
@@ -149,6 +164,78 @@ const Hero = ({ count }: { count?: number }) => {
         <span className="scroll-cue relative block h-10 w-px overflow-hidden bg-white/25" />
       </div>
     </section>
+  )
+}
+
+// Survol de Lyon (vidéo Pexels, libre de droits) qui tourne en boucle : la fin se fond dans le début.
+// Un cadrage pour ordinateur et un pour téléphone, chacun en AV1 (plus léger) et en H.264 (appareils plus anciens).
+const HERO_VIDEOS = {
+  paysage: [
+    { src: paysageAv1, type: 'video/mp4; codecs="av01.0.08M.08"' },
+    { src: paysageH264, type: "video/mp4" },
+  ],
+  portrait: [
+    { src: portraitAv1, type: 'video/mp4; codecs="av01.0.08M.08"' },
+    { src: portraitH264, type: "video/mp4" },
+  ],
+}
+
+const HeroVideo = () => {
+  const portrait = useMediaQuery("(orientation: portrait)")
+  const [allowed, setAllowed] = useState(false)
+
+  // Téléchargée une fois la page chargée, pour ne pas ralentir l'affichage.
+  // Jamais si l'appareil demande moins d'animations ou d'économiser les données : la photo reste.
+  useEffect(() => {
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData
+    if (saveData || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    const start = () => setAllowed(true)
+    if (document.readyState === "complete") {
+      start()
+      return
+    }
+    window.addEventListener("load", start, { once: true })
+    return () => window.removeEventListener("load", start)
+  }, [])
+
+  if (!allowed) return null
+  // Nouvelle vidéo si le téléphone pivote (ou si la fenêtre change de forme)
+  const format = portrait ? "portrait" : "paysage"
+  return <LoopVideo key={format} sources={HERO_VIDEOS[format]} />
+}
+
+const LoopVideo = ({ sources }: { sources: { src: string; type: string }[] }) => {
+  const ref = useRef<HTMLVideoElement>(null)
+  const [playing, setPlaying] = useState(false)
+
+  // Lecture seulement quand le haut de la page est à l'écran
+  useEffect(() => {
+    const video = ref.current
+    if (!video) return
+    video.muted = true
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) video.play().catch(() => {})
+      else video.pause()
+    })
+    observer.observe(video)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <video
+      ref={ref}
+      muted
+      loop
+      playsInline
+      preload="auto"
+      aria-hidden="true"
+      onPlaying={() => setPlaying(true)}
+      className={cn("absolute inset-0 h-full w-full object-cover transition-opacity duration-1000", playing ? "opacity-100" : "opacity-0")}
+    >
+      {sources.map((source) => (
+        <source key={source.src} src={source.src} type={source.type} />
+      ))}
+    </video>
   )
 }
 

@@ -271,7 +271,7 @@
   transform: translate3d(0, calc(var(--p) * 22%), 0) scale(calc(1 + var(--p) * 0.06));
   will-change: transform;
 }
-.hero-media img {
+.hero-zoom {
   animation: hero-zoom 2.4s var(--ease-out) both;
 }
 @keyframes hero-zoom {
@@ -283,7 +283,7 @@
   transform: translate3d(0, calc(var(--p) * -90px), 0);
 }
 .hero-shade {
-  opacity: calc(0.55 + var(--p) * 0.45);
+  opacity: calc(0.7 + var(--p) * 0.3);
 }
 
 .scroll-cue::after {
