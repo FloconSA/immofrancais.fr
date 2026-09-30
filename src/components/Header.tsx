@@ -19,17 +19,15 @@ const Header = () => {
   const hidden = useHeaderHidden()
   const [menuOpen, setMenuOpen] = useState(false)
 
-  // Sur l'accueil, l'en-tête est transparent au-dessus de la grande photo
-  const overHero = pathname === "/" && !scrolled && !menuOpen
-
   useEffect(() => setMenuOpen(false), [pathname])
 
   return (
     <>
       <header
         className={cn(
-          "fixed inset-x-0 top-0 z-50 border-b transition-[transform,background-color,border-color,color] duration-500 ease-out-expo",
-          overHero ? "border-transparent text-white" : "border-line/70 bg-canvas/75 text-ink backdrop-blur-xl backdrop-saturate-150",
+          "fixed inset-x-0 top-0 z-50 border-b bg-canvas/75 text-ink backdrop-blur-xl backdrop-saturate-150 transition-[transform,border-color] duration-500 ease-out-expo",
+          // Filet visible seulement quand la page défile
+          scrolled || menuOpen ? "border-line/70" : "border-transparent",
           hidden && !menuOpen && "-translate-y-[calc(100%+24px)]",
         )}
         style={{ viewTransitionName: "site-header" }}
@@ -63,7 +61,7 @@ const Header = () => {
             <Link
               to="/contact"
               viewTransition
-              className={cn("hidden md:inline-flex btn-sm", overHero ? "btn-light" : "btn-primary")}
+              className="btn-primary btn-sm hidden md:inline-flex"
             >
               Nous contacter
             </Link>
