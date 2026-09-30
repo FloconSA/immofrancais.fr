@@ -1,6 +1,6 @@
 import { CSSProperties, useRef } from "react"
 import { Link } from "react-router"
-import { ArrowRightIcon } from "@heroicons/react/20/solid"
+import { ArrowRightIcon, MapPinIcon } from "@heroicons/react/20/solid"
 import HouseCard, { HouseCardSkeleton } from "../components/HouseCard"
 import Reveal, { RisingWords } from "../components/Reveal"
 import Contact from "../components/Contact"
@@ -98,55 +98,92 @@ const Home = () => {
   )
 }
 
+// Photo d'accueil (Pexels, libre de droits), déclinée en plusieurs tailles et deux cadrages :
+// le navigateur télécharge la plus adaptée à l'écran, pour une image toujours nette.
+const HERO_PHOTO = {
+  alt: "Lyon en automne : les façades colorées des quais de Saône et la passerelle Saint-Vincent",
+  place: "Lyon · Quais de Saône",
+  // Largeurs disponibles. Le WebP ne sert qu'aux navigateurs anciens (sans AVIF) : pas de version géante pour eux.
+  paysage: { avif: [1280, 1920, 2560, 3840, 5760], webp: [1280, 1920, 2560] },
+  portrait: { avif: [720, 1080, 1440, 2160], webp: [720, 1080, 1440] },
+}
+const heroSrcSet = (format: "paysage" | "portrait", ext: "avif" | "webp") =>
+  HERO_PHOTO[format][ext].map((w) => `/accueil/lyon-${format}-${w}.${ext} ${w}w`).join(", ")
+// Largeur affichée : l'image déborde un peu de son cadre (léger zoom), d'où plus de 100vw
+const PAYSAGE_SIZES = "112vw"
+const PORTRAIT_SIZES = "(orientation: portrait) 120vw"
+
 const Hero = ({ count }: { count?: number }) => {
-  const ref = useRef<HTMLElement>(null)
-  // 0 en haut de page, 1 quand la section est sortie de l'écran
-  useScrollProgress(ref, (rect) => -rect.top / rect.height)
+  const photo = useRef<HTMLDivElement>(null)
+  // La photo s'élargit jusqu'aux bords de l'écran pendant que son haut monte vers le haut de l'écran
+  useScrollProgress(photo, (rect, vh) => 1 - rect.top / (vh * 0.55))
+  // Léger décalage de la photo dans son cadre tant qu'elle est visible
+  useScrollProgress(photo, (rect, vh) => (vh - rect.top) / (vh + rect.height), "--q")
 
   return (
-    <section ref={ref} className="hero relative h-[100svh] min-h-[600px] overflow-hidden bg-neutral-950 text-white">
-      <div className="hero-media absolute inset-0">
-        <img
-          src="/lyon.webp"
-          alt="Lyon au lever du soleil, vue depuis Fourvière"
-          width={1200}
-          height={1201}
-          fetchPriority="high"
-          className="h-full w-full object-cover object-[50%_60%]"
-        />
-      </div>
-      <div className="hero-shade absolute inset-0 bg-gradient-to-b from-black/55 via-black/15 to-black/85" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/25 to-transparent" />
-
-      <div className="hero-content container-page relative flex h-full flex-col justify-end pb-20 sm:pb-28">
-        <p className="rise inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[13px] font-medium ring-1 ring-inset ring-white/20 backdrop-blur-md" style={{ "--delay": "100ms" } as CSSProperties}>
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+    <section className="pt-28 md:pt-36" aria-label="Accueil">
+      <div className="container-page">
+        <p className="rise inline-flex w-fit items-center gap-2 rounded-full px-3.5 py-1.5 text-[13px] font-medium text-ink/80 ring-1 ring-inset ring-line" style={{ "--delay": "60ms" } as CSSProperties}>
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
           Réseau immobilier 100 % digital · Lyon
         </p>
-        <h1 className="mt-7 max-w-5xl text-[clamp(3.1rem,9.5vw,8.75rem)] font-semibold leading-[0.9] tracking-[-0.05em]">
-          <RisingWords text="L'immobilier," delay={200} />
-          <br />
-          <span className="serif-accent tracking-[-0.02em]">
-            <RisingWords text="en toute clarté." delay={340} />
-          </span>
-        </h1>
-        <p className="rise mt-8 max-w-xl text-lg leading-relaxed text-white/80 sm:text-xl" style={{ "--delay": "650ms" } as CSSProperties}>
-          Des biens présentés sans détour autour de Lyon, et des simulateurs pour chiffrer votre projet en quelques secondes.
-        </p>
-        <div className="rise mt-10 flex flex-wrap gap-3" style={{ "--delay": "800ms" } as CSSProperties}>
-          <Link to="/housing" viewTransition className="btn-light btn-lg">
-            Voir les biens
-            <ArrowRightIcon className="h-4 w-4" />
-          </Link>
-          <Link to="/simulateurs" viewTransition className="btn-glass btn-lg">
-            Simuler mon achat
-          </Link>
+        <div className="mt-7 grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-10">
+          <h1 className="text-[clamp(3.1rem,8.4vw,8rem)] font-semibold leading-[0.9] tracking-[-0.05em] lg:col-span-8">
+            <RisingWords text="L'immobilier," delay={140} />
+            <br />
+            <span className="serif-accent tracking-[-0.02em]">
+              <RisingWords text="en toute clarté." delay={280} />
+            </span>
+          </h1>
+          <div className="rise lg:col-span-4 lg:pb-2" style={{ "--delay": "520ms" } as CSSProperties}>
+            <p className="max-w-md text-lg leading-relaxed text-muted">
+              Des biens présentés sans détour autour de Lyon, et des simulateurs pour chiffrer votre projet en quelques secondes.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link to="/housing" viewTransition className="btn-primary btn-md sm:btn-lg">
+                Voir les biens
+                <ArrowRightIcon className="h-4 w-4" />
+              </Link>
+              <Link to="/simulateurs" viewTransition className="btn-outline btn-md sm:btn-lg">
+                Simuler mon achat
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="rise absolute bottom-8 right-8 hidden items-center gap-4 text-[13px] text-white/70 sm:flex" style={{ "--delay": "1200ms" } as CSSProperties}>
-        {count !== undefined && <span>{plural(count, "bien disponible", "biens disponibles")}</span>}
-        <span className="scroll-cue relative block h-10 w-px overflow-hidden bg-white/25" />
+      <div ref={photo} className="hero-photo relative mt-12 h-[62svh] sm:h-[72svh] md:mt-16 lg:h-[min(84svh,58rem)]">
+        <div className="hero-curtain absolute inset-0 overflow-hidden bg-soft">
+          <picture>
+            <source media="(orientation: portrait)" type="image/avif" srcSet={heroSrcSet("portrait", "avif")} sizes={PORTRAIT_SIZES} />
+            <source media="(orientation: portrait)" type="image/webp" srcSet={heroSrcSet("portrait", "webp")} sizes={PORTRAIT_SIZES} />
+            <source type="image/avif" srcSet={heroSrcSet("paysage", "avif")} sizes={PAYSAGE_SIZES} />
+            <img
+              src="/accueil/lyon-paysage-1920.webp"
+              srcSet={heroSrcSet("paysage", "webp")}
+              sizes={PAYSAGE_SIZES}
+              alt={HERO_PHOTO.alt}
+              width={3840}
+              height={2560}
+              fetchPriority="high"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          </picture>
+          {/* Voile très léger, seulement en bas, pour lire les étiquettes */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/40 to-transparent" />
+          <div className="container-page absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 pb-5 text-white sm:pb-7">
+            <p className="chip bg-white/15 px-3.5 py-1.5 ring-1 ring-inset ring-white/25 backdrop-blur-md sm:ml-6">
+              <MapPinIcon className="h-4 w-4" />
+              {HERO_PHOTO.place}
+            </p>
+            {count !== undefined && count > 0 && (
+              <Link to="/housing" viewTransition className="chip hidden bg-white/15 px-3.5 py-1.5 ring-1 ring-inset ring-white/25 backdrop-blur-md transition-colors hover:bg-white/25 sm:mr-6 sm:inline-flex">
+                {plural(count, "bien disponible", "biens disponibles")}
+                <ArrowRightIcon className="h-4 w-4" />
+              </Link>
+            )}
+          </div>
+        </div>
       </div>
     </section>
   )

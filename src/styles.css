@@ -264,41 +264,38 @@
 /* Accueil                                                             */
 /* ================================================================== */
 
-.hero {
+/* Grande photo sous le titre.
+   --p (0 → 1) : la photo, alignée sur la colonne du texte, s'élargit jusqu'aux bords de l'écran au défilement.
+   --q (0 → 1) : léger décalage de la photo dans son cadre (effet de profondeur). */
+.hero-photo {
   --p: 0;
+  --q: 0.5;
+  --gutter: max(1.25rem, (100% - 80rem) / 2 + 1.25rem);
+  clip-path: inset(0 calc((1 - var(--p)) * var(--gutter)) round calc((1 - var(--p)) * 1.75rem));
 }
-.hero-media {
-  transform: translate3d(0, calc(var(--p) * 22%), 0) scale(calc(1 + var(--p) * 0.06));
-  will-change: transform;
-}
-.hero-media img {
-  animation: hero-zoom 2.4s var(--ease-out) both;
-}
-@keyframes hero-zoom {
-  from { transform: scale(1.14); }
-  to { transform: scale(1.04); }
-}
-.hero-content {
-  opacity: calc(1 - var(--p) * 1.6);
-  transform: translate3d(0, calc(var(--p) * -90px), 0);
-}
-.hero-shade {
-  opacity: calc(0.55 + var(--p) * 0.45);
+@media (min-width: 640px) {
+  .hero-photo {
+    --gutter: max(2rem, (100% - 80rem) / 2 + 2rem);
+  }
 }
 
-.scroll-cue::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: white;
-  transform-origin: top;
-  animation: scroll-cue 2.2s var(--ease-out) infinite;
+/* À l'ouverture : la photo se dévoile de bas en haut, en se posant doucement */
+.hero-curtain {
+  animation: hero-curtain 1.6s var(--ease-out) 0.35s both;
 }
-@keyframes scroll-cue {
-  0% { transform: scaleY(0); transform-origin: top; }
-  45% { transform: scaleY(1); transform-origin: top; }
-  55% { transform: scaleY(1); transform-origin: bottom; }
-  100% { transform: scaleY(0); transform-origin: bottom; }
+@keyframes hero-curtain {
+  from { clip-path: inset(100% 0 0 0); }
+  to { clip-path: inset(0); }
+}
+.hero-photo img {
+  translate: 0 calc((var(--q) - 0.5) * -8%);
+  scale: 1.1;
+  animation: hero-settle 2.4s var(--ease-out) 0.35s both;
+  will-change: translate;
+}
+@keyframes hero-settle {
+  from { scale: 1.28; }
+  to { scale: 1.1; }
 }
 
 /* Texte qui s'éclaire mot à mot au défilement */
@@ -499,13 +496,15 @@ dialog.sheet[open] .stagger > *:nth-child(5) { animation-delay: 240ms; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
   .reveal { opacity: 1; transform: none; filter: none; }
-  .hero-media, .hero-content, .parallax img { transform: none; }
-  .hero-content { opacity: 1; }
+  .parallax img { transform: none; }
+  .hero-photo { --p: 0 !important; --q: 0.5 !important; }
+  .hero-curtain, .hero-photo img { animation: none !important; }
   .statement .w { opacity: 1; }
   ::view-transition-group(*),
   ::view-transition-old(*),
