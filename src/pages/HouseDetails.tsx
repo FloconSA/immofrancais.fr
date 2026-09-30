@@ -11,9 +11,19 @@ import Simulators from "../components/simulators/Simulators"
 import NotFound from "./NotFound"
 import { House, heroHints, paragraphs, useHouse } from "../lib/houses"
 import { Place, locate } from "../lib/geo"
-import { useActiveSection, useHeaderHidden, useScrollProgress, useTitle } from "../lib/hooks"
+import { useActiveSection, useHeaderHidden, usePageMeta, useScrollProgress } from "../lib/hooks"
 import { toast } from "../lib/toast"
 import { cn, euros, number } from "../lib/format"
+
+// Description affichée par Google sous le lien de l'annonce : type, surface, prix, puis première vraie phrase
+// du texte (la première ligne est souvent un simple titre, sans point final)
+const summary = (house: House) => {
+  const facts = [house.type, house.surface && `${number(house.surface, 2)} m²`, house.price && euros(house.price)].filter(Boolean).join(" · ")
+  const blocks = paragraphs(house.description)
+  const sentence = blocks.find((block) => /[.!?…]$/.test(block)) ?? blocks[0]
+  const text = [facts, sentence].filter(Boolean).join(". ").replace(/\s+/g, " ")
+  return text.length > 160 ? `${text.slice(0, 157).replace(/\s+\S*$/, "").replace(/[\s,.;:–-]+$/, "")}…` : text
+}
 
 const HouseDetails = () => {
   const { id } = useParams()
@@ -21,7 +31,7 @@ const HouseDetails = () => {
   const [photo, setPhoto] = useState<number | null>(null)
   const [place, setPlace] = useState<Place | null>(null)
 
-  useTitle(house?.name)
+  usePageMeta({ title: house?.name, description: house && summary(house) })
 
   useEffect(() => {
     setPlace(null)

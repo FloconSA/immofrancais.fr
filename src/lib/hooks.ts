@@ -1,4 +1,5 @@
 import { RefObject, useEffect, useRef, useState, useSyncExternalStore } from "react"
+import { useLocation } from "react-router"
 
 /* ------------------------------------------------------------------ */
 /* Défilement de la page                                               */
@@ -176,16 +177,44 @@ export const useTweenedNumber = (value: number, duration = 500) => {
   return shown
 }
 
-/** Titre de l'onglet du navigateur */
-export const useTitle = (title?: string) => {
+/* ------------------------------------------------------------------ */
+/* Titre de la page et informations lues par Google                    */
+/* ------------------------------------------------------------------ */
+
+const SITE_URL = "https://immo-francais.fr"
+
+// Balise de l'en-tête du document, créée si elle n'existe pas encore
+const headTag = (tag: "meta" | "link", key: "name" | "rel", value: string) => {
+  let element = document.head.querySelector(`${tag}[${key}="${value}"]`)
+  if (!element) {
+    element = document.createElement(tag)
+    element.setAttribute(key, value)
+    document.head.appendChild(element)
+  }
+  return element
+}
+
+/**
+ * Titre de l'onglet (et du lien dans Google), description affichée sous ce lien,
+ * adresse officielle de la page (sans les réglages du type ?onglet=…),
+ * ou consigne de ne pas l'afficher dans Google (pages introuvables).
+ */
+export const usePageMeta = ({ title, description, noindex = false }: { title?: string; description?: string; noindex?: boolean }) => {
+  const { pathname } = useLocation()
+
   useEffect(() => {
     if (!title) return
-    const previous = document.title
-    document.title = `${title} — ImmoFrançais`
-    return () => {
-      document.title = previous
+    document.title = title.startsWith("ImmoFrançais") ? title : `${title} — ImmoFrançais`
+    if (description) headTag("meta", "name", "description").setAttribute("content", description)
+
+    if (noindex) {
+      headTag("meta", "name", "robots").setAttribute("content", "noindex")
+      document.head.querySelector('link[rel="canonical"]')?.remove()
+    } else {
+      document.head.querySelector('meta[name="robots"]')?.remove()
+      headTag("link", "rel", "canonical").setAttribute("href", SITE_URL + (pathname.replace(/\/+$/, "") || "/"))
     }
-  }, [title])
+  }, [title, description, noindex, pathname])
 }
 
 export const useMediaQuery = (query: string) =>
