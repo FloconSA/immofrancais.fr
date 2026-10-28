@@ -11,9 +11,26 @@ export const SERIES = ["var(--series-1)", "var(--series-2)", "var(--series-3)", 
 
 export type Segment = { label: string; value: number; color: string; detail?: string }
 
+// Parts en pourcentage au dixième près, dont la somme fait exactement 100 % :
+// on arrondit vers le bas, puis on rend les dixièmes manquants aux parts les plus proches du dixième suivant
+const shares = (values: number[]) => {
+  const total = values.reduce((sum, v) => sum + Math.max(0, v), 0)
+  if (total <= 0) return values.map(() => 0)
+  const exact = values.map((v) => (Math.max(0, v) / total) * 1000)
+  const tenths = exact.map((v) => Math.floor(v))
+  let missing = 1000 - tenths.reduce((sum, v) => sum + v, 0)
+  const byRemainder = exact.map((v, i) => ({ i, rest: v - tenths[i] })).sort((a, b) => b.rest - a.rest)
+  for (const { i } of byRemainder) {
+    if (missing <= 0) break
+    tenths[i]++
+    missing--
+  }
+  return tenths.map((v) => v / 1000)
+}
+
 export const StackedBar = ({ segments, label }: { segments: Segment[]; label: string }) => {
   const visible = segments.filter((s) => s.value > 0)
-  const total = visible.reduce((sum, s) => sum + s.value, 0) || 1
+  const parts = shares(segments.map((s) => s.value))
   return (
     <div>
       {/* Chaque part est séparée de la suivante par un petit espace, pas par un trait */}
@@ -28,7 +45,7 @@ export const StackedBar = ({ segments, label }: { segments: Segment[]; label: st
         ))}
       </div>
       <dl className="mt-5 grid gap-3">
-        {segments.map((s) => (
+        {segments.map((s, i) => (
           <div key={s.label} className="flex items-baseline justify-between gap-4 text-[15px]">
             <dt className="flex min-w-0 items-baseline gap-2.5">
               <span className="h-2.5 w-2.5 shrink-0 translate-y-[-1px] rounded-sm" style={{ background: s.color }} aria-hidden="true" />
@@ -39,7 +56,7 @@ export const StackedBar = ({ segments, label }: { segments: Segment[]; label: st
             </dt>
             <dd className="tabular shrink-0 text-right">
               <span className="font-medium">{euros(s.value)}</span>
-              <span className="ml-2 inline-block w-14 text-[13px] text-muted">{percent(s.value / total)}</span>
+              <span className="ml-2 inline-block w-14 text-[13px] text-muted">{percent(parts[i])}</span>
             </dd>
           </div>
         ))}

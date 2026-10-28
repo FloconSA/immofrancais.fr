@@ -18,16 +18,25 @@ type NumberFieldProps = {
   hint?: ReactNode
 }
 
-const parse = (text: string) => Number(text.replace(/[\s  €%]/g, "").replace(",", "."))
+// Pour un montant en euros, un point ou une virgule suivis de trois chiffres séparent les milliers :
+// « 250.000 » et « 250,000 » valent 250 000. Pour un taux, ils marquent les décimales (« 3.4 » = 3,4).
+const parse = (text: string, decimals: number) => {
+  const compact = text.replace(/[\s  €%]/g, "")
+  const digits = decimals === 0 ? compact.replace(/[.,](?=\d{3}(?:[.,]|$))/g, "") : compact
+  return Number(digits.replace(",", "."))
+}
 
 export const NumberField = ({ label, value, onChange, min, max, inputMax, step, suffix, decimals = 0, hint }: NumberFieldProps) => {
   const id = useId()
   const [draft, setDraft] = useState<string | null>(null)
   const fill = ((clamp(value, min, max) - min) / (max - min)) * 100
+  const upper = inputMax ?? max
 
+  // À la sortie du champ : valeur arrondie à la précision affichée et ramenée dans les bornes
   const commit = () => {
     setDraft(null)
-    onChange(clamp(Number.isFinite(value) ? value : min, min, inputMax ?? max))
+    const next = clamp(Number.isFinite(value) ? Number(value.toFixed(decimals)) : min, min, upper)
+    if (next !== value) onChange(next)
   }
 
   const shown = draft ?? number(value, decimals)
@@ -50,8 +59,8 @@ export const NumberField = ({ label, value, onChange, min, max, inputMax, step, 
             }}
             onChange={(e) => {
               setDraft(e.target.value)
-              const parsed = parse(e.target.value)
-              if (Number.isFinite(parsed)) onChange(parsed)
+              const parsed = parse(e.target.value, decimals)
+              if (Number.isFinite(parsed)) onChange(clamp(parsed, 0, upper))
             }}
             onBlur={commit}
             onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}

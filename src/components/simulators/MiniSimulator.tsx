@@ -77,7 +77,8 @@ const MiniSimulator = ({ initialPrice }: { initialPrice?: number }) => {
           <p className="text-[13px] text-muted">
             Taux indicatif {number(DEFAULTS.rate, 2)} %, assurance comprise.
           </p>
-          <Link to={`/simulateurs?onglet=budget&prix=${Math.round(price)}`} viewTransition className="link-arrow text-accent-ink">
+          {/* Le simulateur complet reprend les trois réglages : il affiche la même mensualité */}
+          <Link to={`/simulateurs?onglet=budget&prix=${Math.round(price)}&apport=${Math.round(downPayment)}&duree=${years}`} viewTransition className="link-arrow text-accent-ink">
             Simulation complète
             <ArrowRightIcon className="h-4 w-4" />
           </Link>

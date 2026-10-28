@@ -25,27 +25,32 @@ export const TABS: { id: TabId; label: string; short: string; icon: typeof Calcu
   { id: "budget", label: "Budget total", short: "Budget", icon: BanknotesIcon },
 ]
 
+// Réglages repris dans l'adresse de la page (« prix », « apport », « duree »)
+export type ProjectParam = "prix" | "apport" | "duree"
+
 type Props = {
   initialPrice?: number
+  initialDownPayment?: number
+  initialYears?: number
   initialTab?: TabId
   onTabChange?: (tab: TabId) => void
-  onPriceChange?: (price: number) => void
+  onParamChange?: (param: ProjectParam, value: number) => void
 }
 
 /**
  * Les trois simulateurs partagent le même projet (prix, apport, durée, taux…) :
  * une valeur changée dans un onglet est reprise dans les autres.
  */
-const Simulators = ({ initialPrice, initialTab = "pret", onTabChange, onPriceChange }: Props) => {
+const Simulators = ({ initialPrice, initialDownPayment, initialYears, initialTab = "pret", onTabChange, onParamChange }: Props) => {
   const startPrice = initialPrice && initialPrice > 0 ? initialPrice : DEFAULTS.price
   const [tab, setTab] = useState<TabId>(initialTab)
   const [price, setPriceState] = useState(startPrice)
   const [kind, setKind] = useState<PropertyKind>("ancien")
   const [firstTime, setFirstTime] = useState(false)
-  const [downPayment, setDownPayment] = useState(defaultDownPayment(startPrice))
+  const [downPayment, setDownPaymentState] = useState(initialDownPayment ?? defaultDownPayment(startPrice))
   const [works, setWorks] = useState(0)
   const [bankFees, setBankFees] = useState(DEFAULTS.bankFees)
-  const [years, setYears] = useState(DEFAULTS.years)
+  const [years, setYearsState] = useState(initialYears ?? DEFAULTS.years)
   const [rate, setRate] = useState(DEFAULTS.rate)
   const [insurance, setInsurance] = useState(DEFAULTS.insurance)
   const [income, setIncome] = useState(0)
@@ -54,7 +59,15 @@ const Simulators = ({ initialPrice, initialTab = "pret", onTabChange, onPriceCha
 
   const setPrice = (value: number) => {
     setPriceState(value)
-    onPriceChange?.(value)
+    onParamChange?.("prix", value)
+  }
+  const setDownPayment = (value: number) => {
+    setDownPaymentState(value)
+    onParamChange?.("apport", value)
+  }
+  const setYears = (value: number) => {
+    setYearsState(value)
+    onParamChange?.("duree", value)
   }
 
   const budget = useMemo(
@@ -123,6 +136,7 @@ const Simulators = ({ initialPrice, initialTab = "pret", onTabChange, onPriceCha
                   { label: "Coût total du crédit", value: euros(loan.cost) },
                 ]}
               />
+              <p className="mt-3 text-[13px] text-muted">Intérêts et assurance, hors frais de dossier et de garantie.</p>
               {income > 0 && <DebtRatio ratio={loan.monthly / income} income={income} />}
               <div className="mt-8 border-t border-line pt-8">
                 <p className="mb-5 font-medium">Répartition de vos remboursements</p>
@@ -151,12 +165,13 @@ const Simulators = ({ initialPrice, initialTab = "pret", onTabChange, onPriceCha
                   segments={[
                     { label: "Droits de mutation", detail: `Impôts reversés à l'État et aux collectivités (${number(budget.notary.dutiesRate, 2)} %)`, value: budget.notary.duties, color: SERIES[0] },
                     { label: "Émoluments du notaire", detail: "Rémunération réglementée, TVA comprise", value: budget.notary.emoluments, color: SERIES[1] },
-                    { label: "Débours et formalités", detail: `Documents, cadastre, sécurité immobilière (forfait ≈ ${euros(FORMALITIES)})`, value: budget.notary.formalities + budget.notary.securityContribution, color: SERIES[2] },
+                    { label: "Débours et formalités", detail: `Contribution de sécurité immobilière (0,1 %) et forfait de ${euros(FORMALITIES)} pour les documents et formalités`, value: budget.notary.formalities + budget.notary.securityContribution, color: SERIES[2] },
                   ]}
                 />
               </div>
               <Note>
-                Environ 7 à 8 % du prix dans l'ancien, 2 à 3 % dans le neuf. Seul le notaire peut établir le montant exact.
+                Dans l'ancien, comptez environ 7,5 à 8,5 % du prix (un peu plus pour un petit budget) ; dans le neuf, 2 à 3 %.
+                Seul le notaire peut établir le montant exact.
               </Note>
             </Results>
           </>
@@ -174,7 +189,7 @@ const Simulators = ({ initialPrice, initialTab = "pret", onTabChange, onPriceCha
             <Results>
               <HeroFigure label="Budget total de l'opération" value={budget.total} />
               <p className="mt-2 text-[15px] text-muted">
-                dont {euros(budget.total - price)} de frais en plus du prix
+                dont {euros(budget.total - price)} {works > 0 ? "de frais et de travaux" : "de frais"} en plus du prix
               </p>
               <div className="mt-8 border-t border-line pt-8">
                 <StackedBar
@@ -183,7 +198,12 @@ const Simulators = ({ initialPrice, initialTab = "pret", onTabChange, onPriceCha
                     { label: "Prix du bien", value: price, color: SERIES[0] },
                     { label: "Frais de notaire", value: budget.notary.total, color: SERIES[1] },
                     { label: "Travaux", value: works, color: SERIES[2] },
-                    { label: "Frais bancaires", detail: `Dossier et garantie du prêt (≈ ${number(GUARANTEE_RATE * 100)} % du prêt)`, value: bankFees + budget.guarantee, color: SERIES[3] },
+                    {
+                      label: "Frais bancaires",
+                      detail: budget.loanAmount > 0 ? `Dossier et garantie du prêt (${number(GUARANTEE_RATE * 100)} % du prêt, estimation)` : "Aucun prêt : l'apport couvre tout",
+                      value: budget.bankFees + budget.guarantee,
+                      color: SERIES[3],
+                    },
                   ]}
                 />
               </div>
@@ -323,7 +343,7 @@ const PropertyInputs = ({ price, setPrice, kind, setKind, firstTime, setFirstTim
     {kind === "ancien" && (
       <Switch
         label="Premier achat de résidence principale"
-        hint="Droits départementaux à 4,5 % au lieu de 5 %."
+        hint="Sans résidence principale à vous depuis deux ans : droits départementaux à 4,5 % au lieu de 5 %."
         checked={firstTime}
         onChange={setFirstTime}
       />
@@ -378,7 +398,10 @@ const Stats = ({ items }: { items: { label: string; value: string }[] }) => (
   </dl>
 )
 
-const DebtRatio = ({ ratio, income }: { ratio: number; income: number }) => {
+const DebtRatio = ({ ratio: exact, income }: { ratio: number; income: number }) => {
+  // Arrondi au dixième supérieur : 35,04 % s'affiche « 35,1 % », jamais « 35,0 % » au-dessus du seuil.
+  // L'arrondi intermédiaire au millionième efface les imprécisions de calcul (35 % tout juste reste 35,0 %).
+  const ratio = Math.ceil(Math.round(exact * 1e6) / 1e3) / 1e3
   const level = ratio <= 0.33 ? "good" : ratio <= MAX_DEBT_RATIO ? "warning" : "critical"
   const colors = { good: "#0ca30c", warning: "#fab219", critical: "#d03b3b" }
   const labels = {
